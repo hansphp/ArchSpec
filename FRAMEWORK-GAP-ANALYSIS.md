@@ -129,7 +129,7 @@ Current value:
 
 - Defines the workspace composition.
 - Identifies the active architecture manifest.
-- Identifies the active product.
+- Identifies the active product through a reusable slug placeholder.
 - Declares derived artifact categories.
 - Describes where future products should live.
 
@@ -223,7 +223,7 @@ Priority:
 
 - Critical
 
-### `products/control-capacitacion/product-spec.yaml`
+### `products/<slug>/product-spec.yaml`
 
 Current value:
 
@@ -696,7 +696,7 @@ Tasks:
   - import/export definitions
   - acceptance criteria
 - [ ] Define a product glossary convention.
-- [ ] Upgrade `products/control-capacitacion/product-spec.yaml`.
+- [ ] Upgrade `products/<slug>/product-spec.yaml`.
 - [ ] Create a reusable product template.
 
 Expected deliverables:

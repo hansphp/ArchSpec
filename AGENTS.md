@@ -24,8 +24,21 @@ Core Rule
 - The repository must remain reconstructable from `project-spec.yaml` plus its referenced manifests.
 - If code and manifests disagree, the manifests are correct unless the user explicitly asks to update them.
 
+Slug Bootstrap Rule
+- `<slug>` is a required placeholder, not a product name.
+- For a new project, the first concrete action is to resolve `<slug>` from the user's first project-creation prompt.
+- Canonical first prompt example:
+  - `Create the project "helpdesk-lite" as a new project.`
+- Before any product definition or code generation, the resolved slug must be mapped to:
+  - `project-spec.yaml` `workspace.source_of_truth.active_product_spec`,
+  - `project-spec.yaml` `modules.active_product.id`,
+  - `project-spec.yaml` `modules.active_product.path`,
+  - `products/<slug>/product-spec.yaml`,
+  - and any framework references that describe the active product context.
+
 Expected LLM Interactions
 - The agent must be able to execute requests such as:
+  - `Create the project "helpdesk-lite" as a new project.`
   - "Create a new application using the same scaffolding."
   - "Change the database engine for every product using this architecture."
   - "Add an entity or a workflow only to the active product."
@@ -121,8 +134,8 @@ Project Defaults
   - React + Vite frontend.
   - ECharts for dashboards.
   - WeasyPrint and openpyxl for reports.
-- Current active product:
-  - `control-capacitacion`.
+- Current active product placeholder:
+  - `<slug>` via `products/<slug>/product-spec.yaml` until the first project-creation prompt resolves it.
 
 Execution Rules
 - Prefer `rg` and `rg --files` for search.

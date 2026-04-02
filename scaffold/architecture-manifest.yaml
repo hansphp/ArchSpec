@@ -164,7 +164,9 @@ playbooks:
       - "Review migrations for dialect differences."
   add_new_product:
     steps:
+      - "Resolve the slug from the first project-creation prompt."
       - "Create products/<slug>/product-spec.yaml."
+      - "Update project-spec.yaml so the active product id and active product spec path use the resolved slug."
       - "Declare the capabilities required by the product."
       - "Register the product in project-spec.yaml."
       - "Keep this manifest free of business logic."

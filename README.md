@@ -36,6 +36,37 @@ The key separation is:
 
 That separation is the entire point of the framework.
 
+## Slug-first bootstrap
+
+`<slug>` is the first concrete identity decision for any new product.
+
+It is not filler text.
+
+The first project-creation prompt should resolve it explicitly. Canonical example:
+
+```text
+Create the project "helpdesk-lite" as a new project.
+```
+
+Before any product definition or code generation begins, that prompt should establish the active project context and map the slug to the framework anchors that depend on it.
+
+### Slug propagation map
+
+| File | Slug-bearing anchors | Purpose |
+|---|---|---|
+| `project-spec.yaml` | `workspace.source_of_truth.active_product_spec`, `modules.active_product.id`, `modules.active_product.path`, `future_products.location_pattern` | Establishes the active product identity and its manifest path, and keeps the reusable slug path pattern visible. |
+| `scaffold/architecture-manifest.yaml` | `playbooks.add_new_product.steps` | Defines the bootstrap procedure for adding a product. |
+| `AGENTS.md` | active product guidance and `products/<slug>/product-spec.yaml` references | Tells agents how to interpret the active product placeholder. |
+| `README.md` | product creation guidance, examples, and active product explanations | Keeps human-facing instructions aligned with the slug-first rule. |
+| `LIFECYCLE-ROADMAP.md` | Phase 0 active product context, deliverable paths, and validation-case language | Makes slug definition part of lifecycle entry criteria. |
+| `FRAMEWORK-GAP-ANALYSIS.md` | generic `products/<slug>/product-spec.yaml` references | Keeps framework analysis reusable instead of product-specific. |
+
+When the first prompt resolves `helpdesk-lite`, the framework should immediately interpret:
+
+- active project: `helpdesk-lite`
+- active product spec: `products/helpdesk-lite/product-spec.yaml`
+- active product folder: `products/helpdesk-lite/`
+
 ## What this scaffolding is for
 
 Use this scaffolding when you want to define an application in a disciplined, repeatable way before implementing it.
@@ -82,7 +113,7 @@ The intended destination is a `spec-as-source` framework where structured manife
 |-- scaffold/
 |   `-- architecture-manifest.yaml
 `-- products/
-    `-- <product-slug>/
+    `-- <slug>/
         `-- product-spec.yaml
 ```
 
@@ -268,9 +299,10 @@ The repository currently uses:
 
 - workspace manifest: `project-spec.yaml`
 - architecture manifest: `scaffold/architecture-manifest.yaml`
-- active product: `products/control-capacitacion/product-spec.yaml`
+- active project placeholder: `<slug>`
+- active product: `products/<slug>/product-spec.yaml`
 
-The active product is an example validation case for the framework. It proves that the scaffolding can represent:
+Until the first project-creation prompt resolves a value, the active project is literally the placeholder `<slug>`. A concrete instantiation should prove that the scaffolding can represent:
 
 - catalog CRUD,
 - person-level tracking,
@@ -656,14 +688,22 @@ If not, the implementation still has drift.
 
 To create a new product on top of the same scaffolding:
 
-1. create a new folder under `products/`,
-2. create `products/<new-slug>/product-spec.yaml`,
-3. describe the product purpose,
-4. declare the required capabilities,
-5. define its domain entities,
-6. define rules, screens, reports, imports, and exports,
-7. register it in `project-spec.yaml`,
-8. decide whether it becomes the active product.
+1. define the slug from the first project-creation prompt,
+2. map that slug to the active product fields in `project-spec.yaml`,
+3. create a new folder under `products/`,
+4. create `products/<slug>/product-spec.yaml`,
+5. describe the product purpose,
+6. declare the required capabilities,
+7. define its domain entities,
+8. define rules, screens, reports, imports, and exports,
+9. register it in `project-spec.yaml`,
+10. decide whether it becomes the active product.
+
+Canonical first prompt:
+
+```text
+Create the project "helpdesk-lite" as a new project.
+```
 
 When implementation starts, the product should be materialized under:
 
@@ -676,11 +716,11 @@ The framework repository should not pre-populate `source/` with application file
 
 ```text
 products/
-`-- asset-tracking/
+`-- <slug>/
     `-- product-spec.yaml
 ```
 
-Then update `project-spec.yaml` to point `active_product_spec` to that new product if needed.
+Then update `project-spec.yaml` so the resolved slug becomes the active product context if needed.
 
 ## Worked example: building `helpdesk-lite` with `GPT-5.1-Codex-Max`
 
@@ -699,7 +739,7 @@ Why this example is a good fit:
 - it is small enough to explain end to end,
 - it still has real domain complexity,
 - it needs roles, workflows, states, dashboards, and reports,
-- and it demonstrates the value of the framework without overlapping with the real product currently used as the framework validation case.
+- and it demonstrates the value of the framework without coupling the scaffolding to a permanent product identity.
 
 The example product is an internal helpdesk for:
 
@@ -724,28 +764,35 @@ Important maturity note:
 - Steps 8 through 11 describe the intended delivery workflow, but today they are executed primarily through guided implementation by Codex rather than through a finished schema-backed generator pipeline.
 - Full deterministic regeneration still depends on future work such as manifest schemas, validators, capability contracts, and generators.
 
-### Step 0. Start the engagement correctly
+### Step 0. Resolve the project slug and start the engagement correctly
 
 Goal:
 
+- resolve the active project identity before writing product definitions,
 - start from framework context, not from random code generation.
 
 Human actions:
 
 1. open the ArchSpec framework repository,
-2. decide whether the current architecture manifest can support `helpdesk-lite`,
-3. choose `gpt-5.1-codex-max` as the working model in Codex,
-4. ask Codex to read the framework before proposing implementation.
+2. choose `gpt-5.1-codex-max` as the working model in Codex,
+3. issue a first prompt that resolves the slug in English,
+4. ask Codex to map that slug to every active-product placeholder before proposing implementation,
+5. decide whether the current architecture manifest can support `helpdesk-lite`.
 
 Recommended prompt:
 
 ```text
+Create the project "helpdesk-lite" as a new project.
+Resolve the slug as `helpdesk-lite`, map it to every active-product placeholder in the framework, and explain which manifests must be updated before any code is written.
 Read AGENTS.md, project-spec.yaml, scaffold/architecture-manifest.yaml, README.md, and REFERENCES.md.
-Explain the framework boundaries and prepare to define a new product called helpdesk-lite without writing application code yet.
+Explain the framework boundaries and prepare to define the product without writing application code yet.
 ```
 
 Expected result:
 
+- the slug `helpdesk-lite` is fixed as the active project identity,
+- the active product path `products/helpdesk-lite/product-spec.yaml` is established,
+- the slug propagation targets are identified before any product content is drafted,
 - Codex understands the framework,
 - Codex does not jump into source code generation too early,
 - and the conversation starts at the correct layer.
@@ -1494,15 +1541,17 @@ If no, it likely belongs in product.
 
 The expected agent workflow is:
 
-1. read `project-spec.yaml`,
-2. read the referenced architecture manifest,
-3. read the active product spec,
-4. identify the correct ownership layer for the request,
-5. update the manifest first,
-6. then implement derived code changes.
+1. if the user is creating a new product, resolve the slug and map it to the active product placeholders,
+2. read `project-spec.yaml`,
+3. read the referenced architecture manifest,
+4. read the active product spec,
+5. identify the correct ownership layer for the request,
+6. update the manifest first,
+7. then implement derived code changes.
 
 Good requests:
 
+- `Create the project "helpdesk-lite" as a new project.`
 - "Create a new product under `products/` for asset tracking using the existing architecture."
 - "Extend the architecture manifest with a reusable CSV import capability."
 - "Switch the active product in `project-spec.yaml`."

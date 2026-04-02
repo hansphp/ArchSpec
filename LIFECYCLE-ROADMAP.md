@@ -104,6 +104,18 @@ Requirements Management is continuous across all phases.
 - Release readiness is a documented decision, not a feeling.
 - Architecture change is governed, not improvised.
 
+## Slug bootstrap convention
+
+Before Phase 0 can progress, a new product engagement must resolve the project slug.
+
+Canonical first prompt:
+
+```text
+Create the project "helpdesk-lite" as a new project.
+```
+
+That prompt should establish the active product context, map the resolved slug to `project-spec.yaml`, and identify `products/<slug>/product-spec.yaml` as the target product manifest before any deeper definition work begins.
+
 ## How to use this document
 
 Use this roadmap in one of two ways:
@@ -157,6 +169,7 @@ This phase prepares the team, repository, rules, governance, and baseline archit
 - establish the architecture repository structure,
 - tailor the framework for the engagement,
 - define ownership and governance roles,
+- resolve and normalize the project slug from the project-creation prompt,
 - confirm the active architecture manifest and product context,
 - define working agreements for documentation, review, and decision-making.
 
@@ -167,6 +180,7 @@ This phase prepares the team, repository, rules, governance, and baseline archit
 - [ ] The architecture repository structure is agreed.
 - [ ] Governance roles and decision owners are identified.
 - [ ] The working architecture framework is tailored for the engagement.
+- [ ] The project slug is defined and mapped to the active product context.
 - [ ] The active architecture manifest is confirmed.
 - [ ] The active product context is confirmed.
 - [ ] Decision logging is defined.
@@ -177,6 +191,7 @@ This phase prepares the team, repository, rules, governance, and baseline archit
 
 - The project knows how architecture decisions will be made.
 - The team knows where artifacts live.
+- The team knows which slug identifies the active product context.
 - The team knows which manifests are authoritative.
 - The team can begin structured definition work without ambiguity.
 
@@ -188,6 +203,7 @@ This phase prepares the team, repository, rules, governance, and baseline archit
 - Architecture Repository Index
 - Organizational Model for Architecture Work
 - Architecture Governance Model
+- Active Product Slug Registration
 - Decision Log or ADR Policy
 - Initial Request for Architecture Work
 
@@ -876,7 +892,7 @@ This repository does not yet enforce an artifact directory structure, but the fo
 
 ```text
 deliverables/
-`-- <product-slug>/
+`-- <slug>/
     |-- 00-governance/
     |-- 01-vision-requirements/
     |-- 02-business-architecture/
@@ -901,6 +917,7 @@ Use these gates to decide whether the project can move forward.
 - Principles exist.
 - Governance exists.
 - Repository structure exists.
+- The project slug is defined and mapped.
 - Active manifests are identified.
 
 ### Gate 1: Ready for architecture definition
@@ -947,7 +964,7 @@ Use these gates to decide whether the project can move forward.
 For the current state of this repo:
 
 - the architecture capability is being defined,
-- the product `control-capacitacion` acts as the validation case,
+- a concrete product instantiated from `products/<slug>/product-spec.yaml` acts as the validation case,
 - the roadmap should be used first to harden the scaffolding itself,
 - and later to guide the delivery lifecycle of each product built on top of the scaffolding.
 

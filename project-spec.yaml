@@ -6,19 +6,30 @@ workspace:
   purpose: "Separate the reusable scaffolding from the definition of the active product."
   target_operating_mode: "spec_as_source"
   spec_to_code_expectation: "Manifests must become detailed enough to map to implementation almost literally."
+  bootstrap_contract:
+    first_step: "Resolve the product slug from the first project-creation prompt before writing product definitions or code."
+    prompt_example: "Create the project \"helpdesk-lite\" as a new project."
+    activation_targets:
+      - "workspace.source_of_truth.active_product_spec"
+      - "modules.active_product.id"
+      - "modules.active_product.path"
+    reference_patterns:
+      - "future_products.location_pattern"
   source_of_truth:
     composition_manifest: "project-spec.yaml"
     architecture_manifest: "scaffold/architecture-manifest.yaml"
-    active_product_spec: "products/control-capacitacion/product-spec.yaml"
+    active_product_spec: "products/<slug>/product-spec.yaml"
 
 modules:
   scaffold:
     role: "Defines the reusable technology stack, runtime, deployment shape, tooling, and technical rules."
     path: "scaffold/architecture-manifest.yaml"
   active_product:
-    id: "control-capacitacion"
-    role: "Example product used to validate the scaffolding."
-    path: "products/control-capacitacion/product-spec.yaml"
+    id: "<slug>"
+    status: "placeholder_until_slug_resolution"
+    resolution_source: "first_project_creation_prompt"
+    role: "Generic product slot resolved from the first project-creation prompt and used to validate the scaffolding once a concrete product is instantiated."
+    path: "products/<slug>/product-spec.yaml"
 
 tracking_policy:
   framework_scaffold_tracking:
@@ -99,6 +110,8 @@ evolution_protocol:
 future_products:
   location_pattern: "products/<slug>/product-spec.yaml"
   onboarding_steps:
+    - "Define the slug from the first project-creation prompt."
+    - "Propagate the resolved slug to the active product id and active product spec path."
     - "Create a new directory under products/."
     - "Write a product-spec.yaml focused on domain and UX."
     - "Register the product in this manifest and decide whether it will be the active one."
@@ -106,7 +119,8 @@ future_products:
 
 notes:
   - "At this stage the repository is defining the scaffolding, not only a single application."
-  - "Control de Capacitacion por Fabricante acts as the initial validation case for the framework."
+  - "Until a first project-creation prompt resolves it, <slug> is a bootstrap placeholder rather than a concrete product identity."
+  - "A concrete product instantiated from products/<slug>/product-spec.yaml acts as the validation case for the framework."
   - "The framework target is spec-as-source, not only spec-first or spec-anchored."
   - "The source/ path is reserved for a nested product repository and may hold its own .git directory."
   - "Framework backlog management happens outside this repository."
