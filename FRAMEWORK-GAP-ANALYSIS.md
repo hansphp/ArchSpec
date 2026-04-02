@@ -496,6 +496,8 @@ Impact:
 
 Before implementing generators or validators, these decisions should be made explicitly.
 
+The current ADR set now records these decisions and turns `P0` from an open recommendation into a completed strategy baseline.
+
 ### Decision 1. What is the target operating mode?
 
 Choose the intended ArchSpec target:
@@ -506,6 +508,7 @@ Choose the intended ArchSpec target:
 Decision:
 
 - ArchSpec targets `spec-as-source`.
+- Recorded in `adrs/0001-framework-operating-mode.md`.
 
 Why:
 
@@ -522,9 +525,10 @@ Choose whether ArchSpec is primarily:
 - generator-driven framework,
 - or full compiler-style framework.
 
-Recommendation:
+Decision:
 
 - Start as `validator + conventions + selective generators`.
+- Recorded in `adrs/0003-framework-execution-model.md`.
 
 Why:
 
@@ -540,9 +544,10 @@ Options:
 - OpenAPI-like schema style for data structures
 - custom validator only
 
-Recommendation:
+Decision:
 
 - Use JSON Schema for manifest contracts plus a thin semantic validator for cross-file rules.
+- Recorded in `adrs/0004-manifest-validation-strategy.md`.
 
 Why:
 
@@ -552,7 +557,7 @@ Why:
 
 Choose what ArchSpec will generate first.
 
-Recommendation:
+Decision:
 
 - First generation targets should be:
   - diagrams,
@@ -560,6 +565,7 @@ Recommendation:
   - ORM model skeletons,
   - migration skeletons,
   - document templates.
+- Recorded in `adrs/0005-initial-generation-boundary.md`.
 
 Why:
 
@@ -569,9 +575,10 @@ Why:
 
 Choose how you will prove the framework is not single-product.
 
-Recommendation:
+Decision:
 
 - Add one second product before broadening generator complexity.
+- Recorded in `adrs/0006-reuse-proof-strategy.md`.
 
 Why:
 
@@ -589,27 +596,29 @@ Goal:
 
 Tasks:
 
-- [ ] Define the target operating mode of ArchSpec.
-- [ ] Define the intended execution model of the framework.
-- [ ] Define the schema strategy.
-- [ ] Define the initial generation boundary.
-- [ ] Define what counts as proof of framework reuse.
-- [ ] Record these decisions as ADRs.
+- [x] Define the target operating mode of ArchSpec.
+- [x] Define the intended execution model of the framework.
+- [x] Define the schema strategy.
+- [x] Define the initial generation boundary.
+- [x] Define what counts as proof of framework reuse.
+- [x] Record these decisions as ADRs.
 
 Expected deliverables:
 
-- Framework Strategy ADR
-- Manifest Validation ADR
-- Generation Boundary ADR
-- Reuse Proof ADR
+- `adrs/0001-framework-operating-mode.md`
+- `adrs/0003-framework-execution-model.md`
+- `adrs/0004-manifest-validation-strategy.md`
+- `adrs/0005-initial-generation-boundary.md`
+- `adrs/0006-reuse-proof-strategy.md`
 
 Done when:
 
 - The above decisions are written and approved.
+- Current status: complete in the repository ADR baseline.
 
 Priority:
 
-- Immediate
+- Immediate (completed)
 
 ### P1. Formalize the manifest contracts
 
@@ -907,18 +916,17 @@ Priority:
 
 ## Recommended execution sequence
 
-If you want the shortest path to a credible framework, do this:
+With `P0` now completed, the shortest path to a credible framework is:
 
-1. P0 - freeze the strategic decisions.
-2. P1 - formalize manifest schemas.
-3. P2 - formalize capability contracts.
-4. P3 - enrich the product metamodel.
-5. P4 - add validation and CI.
-6. P5 - define the generation pipeline.
-7. P6 - build the first generators.
-8. P8 - add a second product.
-9. P7 - expand deliverable templates and structure.
-10. P9/P10 - prove variation and full operability.
+1. P1 - formalize manifest schemas.
+2. P2 - formalize capability contracts.
+3. P3 - enrich the product metamodel.
+4. P4 - add validation and CI.
+5. P5 - define the generation pipeline.
+6. P6 - build the first generators.
+7. P8 - add a second product.
+8. P7 - expand deliverable templates and structure.
+9. P9/P10 - prove variation and full operability.
 
 ## What should not be done yet
 
