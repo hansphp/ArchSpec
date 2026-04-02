@@ -17,7 +17,7 @@ One of the most important unresolved decisions was the framework operating mode:
 This decision controls:
 
 - how formal the manifests must become,
-- how deterministic generation must be,
+- how direct manifest-to-artifact derivation should be,
 - how much manual coding is acceptable,
 - how validation and drift detection must work,
 - and how complete the product and architecture metamodels must be.
@@ -30,12 +30,13 @@ In this repository, `spec-as-source` means:
 
 - the manifests are expected to be detailed enough to map to implementation almost literally,
 - the codebase is primarily a realization of the manifests,
-- framework evolution must optimize for machine validation and deterministic derivation,
+- the primary delivery mode is guided Codex interactions that derive code and formal deliverables from the manifests,
+- framework evolution must optimize for machine validation and disciplined derivation rather than for one-command automation alone,
 - and missing implementation behavior should be treated first as missing specification structure.
 
 This does not require all code to be generated immediately.
 
-It does require the framework contracts to evolve toward a level of precision where code generation, artifact derivation, and conformance checking are natural outcomes rather than aspirational ideas.
+It does require the framework contracts to evolve toward a level of precision where guided artifact derivation, conformance checking, and optional automation are natural outcomes rather than aspirational ideas.
 
 ## Consequences
 
@@ -53,7 +54,7 @@ It does require the framework contracts to evolve toward a level of precision wh
 - Capability contracts must become formal.
 - Product specs must carry more structured detail.
 - Validation and CI become mandatory, not optional.
-- Generator design becomes a core part of the framework, not an accessory.
+- Interaction contracts and artifact completion criteria become core parts of the framework, not accessories.
 
 ## Immediate implications
 
@@ -63,7 +64,7 @@ The next framework work should prioritize:
 2. compatibility and versioning rules,
 3. capability contract formalization,
 4. richer product metamodels,
-5. deterministic generation boundaries,
+5. guided artifact-derivation conventions and optional automation boundaries,
 6. validator and CI enforcement.
 
 ## Non-goals
@@ -74,4 +75,4 @@ This decision does not imply:
 - prohibiting all handwritten code,
 - or committing to one generator engine before the contracts are stable.
 
-It only commits the framework to a destination where specifications are authoritative enough to drive code and derived artifacts almost directly.
+It only commits the framework to a destination where specifications are authoritative enough to drive code and derived artifacts almost directly, primarily through guided interactions and secondarily through optional automation where useful.

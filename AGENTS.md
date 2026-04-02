@@ -3,6 +3,7 @@ AGENTS OPERATING GUIDELINES
 Purpose
 - This repository defines the `VibeArchitector` scaffolding itself.
 - `VibeArchitector` is a spec-as-source paradigm where implementation and formal engineering deliverables must emerge from structured definitions instead of ad hoc code growth.
+- The primary operating style is guided Codex-mediated artifact derivation from manifests, not one-command automatic generation.
 - The repository separates three layers:
   - `project-spec.yaml` as the workspace composition manifest.
   - `scaffold/architecture-manifest.yaml` as the reusable technical foundation.
@@ -47,6 +48,7 @@ Expected LLM Interactions
   - "Draft the technical solution specification or compatibility matrix from the active manifests."
   - "Explain which object or class documentation should exist after implementation."
 - These requests must be solved from the correct manifest layer, not by reverse engineering the codebase.
+- The expected mode is iterative manifest-guided interaction and artifact definition, not dependence on a single automatic generator pipeline.
 
 Manifest Requirements
 - `project-spec.yaml` must stay focused on composition:
@@ -71,6 +73,7 @@ Working Mode
 - Always inspect `project-spec.yaml` first.
 - Then inspect the referenced architecture manifest and active product spec.
 - Inspect `REFERENCES.md` when lifecycle design, methodology, governance, quality, security, delivery artifacts, or cross-project scaffolding decisions are relevant.
+- Prefer guided artifact definition and implementation steps from manifests before assuming automation must exist.
 - Use the codebase only to:
   - measure drift between implementation and manifests,
   - apply requested implementation changes,
@@ -103,7 +106,7 @@ Drift Policy
 
 Rebuild Policy
 - The repository must support a full rebuild from `project-spec.yaml` and its referenced manifests.
-- A future chat must be able to recreate the project without relying on prior source files.
+- A future chat must be able to recreate the project through guided manifest-driven interactions without relying on prior source files.
 - Generated outputs may vary in formatting, but must preserve the declared behavior and constraints.
 
 Change Protocol

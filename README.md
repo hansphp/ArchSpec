@@ -25,7 +25,11 @@ In this model:
 
 The target operating mode for ArchSpec is `spec-as-source`.
 
-That means the framework is intended to evolve toward manifests that can map to code and derived artifacts almost literally, with minimal hidden interpretation.
+In ArchSpec, `spec-as-source` does not mean that the repository must succeed as a one-command full code generator.
+
+It means the manifests must become authoritative enough that Codex can derive code and formal deliverables from them through guided interactions with minimal hidden interpretation.
+
+Validation or selective automation may support that workflow later, but they are optional support mechanisms rather than the core purpose of the framework.
 
 The key separation is:
 
@@ -77,26 +81,26 @@ Typical goals:
 - make technical decisions explicit and versioned,
 - let multiple products share the same core architecture,
 - support AI-assisted development without losing structure,
-- rebuild or regenerate applications from manifests,
+- rederive applications and formal deliverables from manifests through guided Codex interactions,
 - reduce the risk of business logic leaking into infrastructure definitions,
 - reduce the risk of stack decisions leaking into product definitions.
 
 ## What this scaffolding is not
 
-This repository is not yet a finished code generator.
+This repository is not primarily a one-command code generator.
 
-Today it defines the contract that future code generation and implementation should follow.
+Today it defines the contract and interaction model that Codex-guided specification, implementation, and formal deliverable work should follow.
 
 That distinction matters:
 
 - the manifests already define what should happen,
-- but the generation engine and implementation modules may still be built later,
-- so the current value of the repo is architectural clarity and repeatable specification,
-- not a complete runnable app generator yet.
+- Codex-guided interactions are the default way to turn them into code and deliverables,
+- validation and selective automation may be added later to harden the workflow,
+- so the current value of the repo is architectural clarity, repeatable specification, and disciplined artifact derivation.
 
 Even so, the intended destination is not merely "documentation that guides coding".
 
-The intended destination is a `spec-as-source` framework where structured manifests become authoritative enough to drive code, documents, diagrams, migrations, and validation nearly directly.
+The intended destination is a `spec-as-source` framework where structured manifests become authoritative enough to drive code, documents, diagrams, migrations, and validation through guided interactions, with automation remaining optional.
 
 ## Repository structure
 
@@ -761,8 +765,8 @@ Typical MVP behavior for `helpdesk-lite`:
 Important maturity note:
 
 - Steps 0 through 7 are fully compatible with the framework as it exists today.
-- Steps 8 through 11 describe the intended delivery workflow, but today they are executed primarily through guided implementation by Codex rather than through a finished schema-backed generator pipeline.
-- Full deterministic regeneration still depends on future work such as manifest schemas, validators, capability contracts, and generators.
+- Steps 8 through 11 already reflect the intended delivery workflow: guided implementation and artifact derivation with Codex from the manifests.
+- Future schemas, validators, templates, or selective generators may harden consistency, but they do not redefine the core operating model.
 
 ### Step 0. Resolve the project slug and start the engagement correctly
 
@@ -1117,8 +1121,8 @@ Goal:
 
 Current-state interpretation:
 
-- at the present maturity of ArchSpec, this means Codex should implement the first application skeleton by using the manifests as the governing source of truth,
-- not that the repository already contains a fully automated one-command generator.
+- at the present and intended operating mode of ArchSpec, this means Codex should implement the first application skeleton by using the manifests as the governing source of truth,
+- not that the repository must become a fully automated one-command generator to be considered successful.
 
 Recommended prompt:
 
@@ -1639,7 +1643,7 @@ The repository already has a strong specification boundary. The next useful addi
 - a product template under `products/_template/`,
 - a formal schema for each manifest type,
 - a manifest validator,
-- a generator pipeline,
+- reusable prompt packs, templates, or selective generators for stable artifact types,
 - capability-to-code mapping modules,
 - architecture profiles for different stacks,
 - example products that stress different capability combinations.

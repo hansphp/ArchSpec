@@ -19,18 +19,17 @@ It clearly expresses:
 - a lifecycle and deliverables mindset,
 - and a methodological base grounded in software engineering and Spec-Driven Development.
 
-What is still missing is the layer that makes the framework operational rather than only well-described.
+What is still missing is the layer that makes the framework operational as a disciplined interactive delivery system rather than only well-described.
 
 In practical terms, the biggest gaps are:
 
 - no formal machine-validatable manifest schemas,
 - no explicit compatibility and versioning policy for manifests,
-- no executable generation contract,
-- no capability contract model detailed enough for automation,
+- no explicit artifact-derivation contract for Codex-guided work,
+- no capability contract model detailed enough for consistent spec-to-artifact derivation,
 - no validator or CI enforcement,
-- no template or generator structure,
 - no second product or second architecture profile proving reusability,
-- and no reference implementation pipeline demonstrating the framework end to end.
+- and no end-to-end proof that the same manifests can guide specification, code, and formal deliverables coherently.
 
 The project is currently strong in:
 
@@ -43,13 +42,13 @@ The project is currently weak in:
 
 - formalization,
 - enforcement,
-- automation,
+- interaction-contract clarity,
 - proof of reuse.
 
 Note:
 
 - The repository now defines a `source/` product workspace convention and a clearer boundary between framework governance and product delivery tracking.
-- Those additions improve structural clarity, but they do not yet replace the need for schemas, validators, and generation mechanics.
+- Those additions improve structural clarity, but they do not yet replace the need for schemas, validators, and explicit artifact-derivation mechanics.
 
 ## Current maturity snapshot
 
@@ -62,9 +61,9 @@ Note:
 | Manifest formalization | Not formalized | Weak |
 | Validation and governance automation | Not implemented | Weak |
 | Capability contract model | Partially defined | Weak-Medium |
-| Generation model | Only implied | Weak |
+| Spec-to-artifact delivery model | Guided by Codex but not formalized enough | Medium |
 | Reusability proof | One example product only | Weak |
-| Framework operability | Not yet executable | Weak |
+| Framework operability | Usable interactively, not yet hardened enough | Medium-Weak |
 
 ## What the repository already solves well
 
@@ -73,6 +72,7 @@ Note:
 - It positions the current product as a validation case, not as the permanent identity of the framework.
 - It defines a useful lifecycle and deliverables language.
 - It provides a curated methodological base for future AI-assisted work.
+- It already supports an interactive Codex-mediated interpretation of spec-to-artifact delivery.
 - It already avoids the biggest conceptual failure mode: mixing framework intent with one product's business logic.
 
 That is important because many framework efforts fail before this point.
@@ -514,25 +514,26 @@ Why:
 
 - The framework is intended to produce manifests that can pass into code and derived artifacts almost literally.
 - This is more aligned with the repository purpose than stopping at a lighter spec-anchored posture.
-- It increases the importance of schemas, capability contracts, validation, and deterministic generation.
+- It increases the importance of schemas, capability contracts, validation, and disciplined interaction patterns.
 
 ### Decision 2. What is the executable form of the framework?
 
 Choose whether ArchSpec is primarily:
 
 - repository convention,
+- Codex-mediated interactive framework,
 - validator plus conventions,
 - generator-driven framework,
 - or full compiler-style framework.
 
 Decision:
 
-- Start as `validator + conventions + selective generators`.
+- Start as `Codex-mediated conventions + validators + optional selective generators`.
 - Recorded in `adrs/0003-framework-execution-model.md`.
 
 Why:
 
-- It is the safest path from concept to operability.
+- It matches the real intended operating model while keeping automation secondary.
 
 ### Decision 3. What is the schema strategy?
 
@@ -751,39 +752,39 @@ Priority:
 
 - High
 
-### P5. Define the generation pipeline
+### P5. Define the artifact derivation contract
 
 Goal:
 
-- Make "derived artifacts" concrete.
+- Make "derived artifacts" concrete in guided Codex interactions.
 
 Tasks:
 
-- [ ] Define an intermediate representation strategy.
-- [ ] Define generator input and output conventions.
+- [ ] Define prompt and interaction conventions for artifact derivation.
+- [ ] Define artifact input and output conventions.
 - [ ] Define generated-file ownership rules.
-- [ ] Define regeneration behavior.
-- [ ] Choose template engine or generator approach.
+- [ ] Define refresh and regeneration behavior.
+- [ ] Define where templates or selective generators are useful accelerators rather than core dependencies.
 
 Expected deliverables:
 
-- Generator architecture document
+- Artifact derivation contract
 - Output conventions
-- Regeneration policy
+- Refresh policy
 
 Done when:
 
-- The repository can explain exactly how manifests become outputs.
+- The repository can explain exactly how manifests become outputs through guided interactions, with automation remaining optional.
 
 Priority:
 
 - High
 
-### P6. Build the first generators
+### P6. Build the first reusable derivation accelerators
 
 Goal:
 
-- Prove the framework can produce useful outputs.
+- Prove the framework can produce useful outputs reproducibly without making automation the core requirement.
 
 Tasks:
 
@@ -795,12 +796,12 @@ Tasks:
 
 Expected deliverables:
 
-- Initial generator modules
-- Example generated outputs
+- Reusable prompt packs, templates, or optional generator modules
+- Example derived outputs
 
 Done when:
 
-- At least three artifact types are generated from manifests reproducibly.
+- At least three artifact types can be derived from manifests reproducibly using shared conventions.
 
 Priority:
 
@@ -922,7 +923,7 @@ With `P0` now completed, the shortest path to a credible framework is:
 2. P2 - formalize capability contracts.
 3. P3 - enrich the product metamodel.
 4. P4 - add validation and CI.
-5. P5 - define the generation pipeline.
+5. P5 - define the artifact derivation contract.
 6. P6 - build the first generators.
 7. P8 - add a second product.
 8. P7 - expand deliverable templates and structure.

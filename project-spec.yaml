@@ -3,9 +3,11 @@ workspace:
   paradigm: "VibeArchitector"
   version: "0.2.0"
   stage: "scaffold_definition"
-  purpose: "Separate the reusable scaffolding from the definition of the active product."
+  purpose: "Separate the reusable scaffolding from the definition of the active product and support guided spec-to-artifact delivery."
   target_operating_mode: "spec_as_source"
-  spec_to_code_expectation: "Manifests must become detailed enough to map to implementation almost literally."
+  primary_delivery_mode: "interactive_codex_mediated"
+  automation_policy: "optional_supporting_capability"
+  spec_to_code_expectation: "Manifests must become detailed enough to map to implementation and formal deliverables almost literally through guided Codex interactions."
   bootstrap_contract:
     first_step: "Resolve the product slug from the first project-creation prompt before writing product definitions or code."
     prompt_example: "Create the project \"helpdesk-lite\" as a new project."
@@ -65,6 +67,7 @@ product_workspace:
 
 generation:
   output_root: "source"
+  derivation_style: "guided_manifest_to_artifact_iterations"
   derived_artifacts:
     - "backend"
     - "frontend"
@@ -96,6 +99,7 @@ generation:
     - "The product spec must not lock in concrete frameworks beyond required capabilities."
     - "Generated code must arise from the combination of the architecture manifest and the active product spec."
     - "Derived product outputs must be created inside source/ once the product repository has been bootstrapped."
+    - "Derived artifacts may be created through guided Codex interactions driven by manifests, with automation remaining optional."
 
 evolution_protocol:
   when_to_edit:
@@ -122,5 +126,6 @@ notes:
   - "Until a first project-creation prompt resolves it, <slug> is a bootstrap placeholder rather than a concrete product identity."
   - "A concrete product instantiated from products/<slug>/product-spec.yaml acts as the validation case for the framework."
   - "The framework target is spec-as-source, not only spec-first or spec-anchored."
+  - "The primary operating style is interactive Codex-mediated derivation of code and formal deliverables from manifests, not one-command automatic generation."
   - "The source/ path is reserved for a nested product repository and may hold its own .git directory."
   - "Framework backlog management happens outside this repository."

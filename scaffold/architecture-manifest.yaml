@@ -3,9 +3,10 @@ architecture:
   version: "0.1.0"
   status: "definition"
   paradigm: "spec-as-source"
-  maturity_note: "The framework target is spec-as-source even though schemas, validators, and generators are not complete yet."
+  execution_style: "interactive_codex_mediated"
+  maturity_note: "The framework target is spec-as-source through guided Codex interactions. Validation and selective automation may harden the process later, but they are not the primary operating model."
   style: "modular_monolith"
-  purpose: "Define the reusable technical core for generating internal applications from specifications."
+  purpose: "Define the reusable technical core for interactively deriving internal applications and formal deliverables from specifications."
   non_goals:
     - "Do not describe domain behavior or business rules."
     - "Do not contain product-specific entities."
@@ -15,6 +16,7 @@ principles:
   - "Allow the product spec to be replaced without rewriting the scaffolding."
   - "Keep the stack parametric and explicitly versionable."
   - "Every executable artifact must be derivable from manifests."
+  - "Prefer guided artifact derivation through manifests and Codex interactions before optional automation."
   - "Keep framework files outside the product source workspace."
   - "Do not mix framework governance tooling with product runtime artifacts."
 
@@ -77,7 +79,7 @@ capability_modules:
     description: "Upload of files or images associated with catalogs."
 
 repository_conventions:
-  framework_root_role: "Contains manifests, ADRs, policies, generators, templates, and framework-level documentation."
+  framework_root_role: "Contains manifests, ADRs, policies, playbooks, templates, optional generators, and framework-level documentation."
   product_source_root: "source"
   product_source_role: "Acts as the reserved root of a nested product repository where generated and developed artifacts live."
   product_source_policy:
@@ -148,6 +150,7 @@ generation_contract:
     - "release_notes"
     - "runtime_files"
   rules:
+    - "The primary execution style is guided derivation with Codex from the manifests."
     - "Stack changes are made here."
     - "Products consume capabilities, not concrete frameworks."
     - "If a product requires a new capability, extend this manifest first."
