@@ -1,0 +1,1412 @@
+# ArchSpec
+
+ArchSpec is a scaffolding for building applications from structured manifests instead of letting implementation details become the source of truth.
+
+The repository is currently in the scaffolding-definition stage. That means the most important artifacts in this repo are not generated source files yet, but the contracts that describe:
+
+- how a project is composed,
+- what technical architecture it runs on,
+- what a concrete product needs,
+- and how future code should be derived from those definitions.
+
+The intent is to make the scaffolding reusable across multiple applications, not only for the current example product.
+
+## Core idea
+
+This repository follows the `VibeArchitector` paradigm.
+
+In this model:
+
+- architecture is declared before implementation,
+- product behavior is declared before implementation,
+- code is derived from manifests,
+- the manifests are the source of truth,
+- and the same scaffolding should support multiple products over time.
+
+The target operating mode for ArchSpec is `spec-as-source`.
+
+That means the framework is intended to evolve toward manifests that can map to code and derived artifacts almost literally, with minimal hidden interpretation.
+
+The key separation is:
+
+- `project-spec.yaml` describes workspace composition.
+- `scaffold/architecture-manifest.yaml` describes reusable technical architecture.
+- `products/<slug>/product-spec.yaml` describes one concrete product.
+- `source/` is the reserved product workspace where a new product repository is cloned or initialized.
+
+That separation is the entire point of the framework.
+
+## What this scaffolding is for
+
+Use this scaffolding when you want to define an application in a disciplined, repeatable way before implementing it.
+
+Typical goals:
+
+- standardize how applications are described,
+- make technical decisions explicit and versioned,
+- let multiple products share the same core architecture,
+- support AI-assisted development without losing structure,
+- rebuild or regenerate applications from manifests,
+- reduce the risk of business logic leaking into infrastructure definitions,
+- reduce the risk of stack decisions leaking into product definitions.
+
+## What this scaffolding is not
+
+This repository is not yet a finished code generator.
+
+Today it defines the contract that future code generation and implementation should follow.
+
+That distinction matters:
+
+- the manifests already define what should happen,
+- but the generation engine and implementation modules may still be built later,
+- so the current value of the repo is architectural clarity and repeatable specification,
+- not a complete runnable app generator yet.
+
+Even so, the intended destination is not merely "documentation that guides coding".
+
+The intended destination is a `spec-as-source` framework where structured manifests become authoritative enough to drive code, documents, diagrams, migrations, and validation nearly directly.
+
+## Repository structure
+
+```text
+.
+|-- AGENTS.md
+|-- FRAMEWORK-GAP-ANALYSIS.md
+|-- LIFECYCLE-ROADMAP.md
+|-- REFERENCES.md
+|-- adrs/
+|-- README.md
+|-- project-spec.yaml
+|-- source/                  # reserved, ignored, and typically empty until product bootstrap
+|-- scaffold/
+|   `-- architecture-manifest.yaml
+`-- products/
+    `-- control-capacitacion/
+        `-- product-spec.yaml
+```
+
+## Framework component map
+
+The framework is not only the three manifests.
+
+It is the combination of composition, reusable architecture, product definition, decision records, methodological guidance, and the reserved product workspace.
+
+The table below explains what each major component is for and why it exists.
+
+| Component | Role | Why it exists |
+|---|---|---|
+| `README.md` | Primary operating guide | Gives humans and agents the shared mental model for using the framework correctly. |
+| `AGENTS.md` | AI operating contract | Tells AI agents which files are authoritative, how to work, and how to respect framework boundaries. |
+| `project-spec.yaml` | Workspace composition manifest | Chooses the active product and architecture, defines generation scope, and defines repo-level rules. |
+| `scaffold/architecture-manifest.yaml` | Reusable architecture manifest | Owns the stack, runtime, variation points, and reusable capability modules. |
+| `products/<slug>/product-spec.yaml` | Concrete product manifest | Owns business behavior, domain entities, reports, workflows, UI requirements, and product rules. |
+| `adrs/` | Architecture decision records | Captures durable framework-level decisions that should outlive a single iteration. |
+| `REFERENCES.md` | Curated methodological base | Gives the framework a stable base of engineering concepts, heuristics, and governance guidance. |
+| `LIFECYCLE-ROADMAP.md` | Formal lifecycle and deliverables guide | Expands the framework into a complete delivery lifecycle aligned to TOGAF-inspired software engineering practice. |
+| `FRAMEWORK-GAP-ANALYSIS.md` | Maturity and backlog analysis | Makes current gaps explicit so framework evolution stays intentional. |
+| `source/` | Reserved product repository root | Keeps product implementation physically separate from the framework and allows a nested product repo with its own `.git`. |
+
+You can think of the framework in layers:
+
+- `README.md`, `AGENTS.md`, `REFERENCES.md`, and `LIFECYCLE-ROADMAP.md` explain how to use the system.
+- `project-spec.yaml`, `scaffold/architecture-manifest.yaml`, and `products/<slug>/product-spec.yaml` define what the system is.
+- `adrs/` records durable framework decisions.
+- `source/` is where the actual product repository is materialized.
+
+## The three manifest layers
+
+### 1. Workspace composition
+
+File:
+
+`project-spec.yaml`
+
+Responsibility:
+
+- declare the active architecture manifest,
+- declare the active product spec,
+- define repo-level generation scope,
+- define composition rules,
+- define how future products are onboarded.
+
+This file answers:
+
+- Which product are we building right now?
+- Which technical architecture is it using?
+- What kinds of artifacts should be derived?
+- Which file should be edited for each type of change?
+
+This file should stay thin.
+
+It should not contain:
+
+- business entities,
+- business rules,
+- UI workflows,
+- framework internals,
+- low-level runtime setup.
+
+It is the composition layer, not the content layer.
+
+### Delivery tracking boundary
+
+ArchSpec does not keep an internal backlog or iteration log for framework evolution.
+
+That is intentional.
+
+The framework backlog is expected to live outside this repository, for example in GitHub Issues or GitHub Projects.
+
+If a concrete application later needs an in-repository backlog, delivery log, or operational memory, that structure belongs in the product repository under `source/`, not in the framework root.
+
+### 2. Reusable architecture
+
+File:
+
+`scaffold/architecture-manifest.yaml`
+
+Responsibility:
+
+- define the technical stack,
+- define runtime and delivery shape,
+- define data and migration strategy,
+- define reusable capability modules,
+- define variation points,
+- define what generated layers are expected,
+- define playbooks for architecture-level changes.
+
+This file answers:
+
+- What language does the backend use?
+- What framework is used?
+- What database engines are allowed?
+- What test strategy exists?
+- What reusable technical capabilities can products consume?
+- What changes belong to architecture rather than business?
+
+This file must remain domain-agnostic.
+
+It should not contain:
+
+- product entities,
+- product-specific workflows,
+- product KPIs,
+- business formulas,
+- product-specific terminology.
+
+Think of it as the reusable engine room.
+
+### Source workspace convention
+
+The repository root is not the product runtime workspace.
+
+The product runtime workspace is reserved under:
+
+`source/`
+
+That means:
+
+- `source/` is not meant to hold framework-owned placeholder files,
+- `source/` should stay absent or empty in the framework repository until implementation bootstrap,
+- a new product repository may be cloned or initialized directly in `source/`,
+- that product repository may own its own `.git` directory,
+- a web app inside that product repository may place its internal code under `source/src/`,
+- runtime artifacts such as `source/Dockerfile` belong inside that product repository,
+- and the framework root remains reserved for manifests, policies, templates, generators, and methodology.
+
+Because Git does not track empty directories, `source/` may legitimately be absent from a clean framework checkout until the product repository is created.
+
+### 3. Product definition
+
+File pattern:
+
+`products/<slug>/product-spec.yaml`
+
+Responsibility:
+
+- define a specific product,
+- define domain entities,
+- define business behavior,
+- define UI requirements,
+- define reports, imports, and exports,
+- define product evolution playbooks.
+
+This file answers:
+
+- What problem does this product solve?
+- Which entities exist?
+- Which rules define the business?
+- Which screens or reports are required?
+- Which architecture capabilities are needed?
+
+This file should not decide the concrete stack when that stack is already owned by the architecture manifest.
+
+Instead, the product should request capabilities. For example:
+
+- `dashboard_kpi`
+- `excel_report`
+- `excel_template_import`
+
+That keeps the product portable across architecture variants.
+
+## Source of truth model
+
+The source of truth is hierarchical:
+
+1. direct user instructions,
+2. `project-spec.yaml`,
+3. the referenced manifests,
+4. generated or handwritten code.
+
+If code and manifests disagree, the manifests win unless the user explicitly asks to update them.
+
+This rule is critical because the framework is spec-as-source, not code-first.
+
+## The current example composition
+
+The repository currently uses:
+
+- workspace manifest: `project-spec.yaml`
+- architecture manifest: `scaffold/architecture-manifest.yaml`
+- active product: `products/control-capacitacion/product-spec.yaml`
+
+The active product is an example validation case for the framework. It proves that the scaffolding can represent:
+
+- catalog CRUD,
+- person-level tracking,
+- dashboards,
+- PDF and Excel reporting,
+- template-based imports,
+- product-specific business rules.
+
+The important point is that the product is not the scaffolding itself.
+
+The product is a tenant of the scaffolding.
+
+## Deliverables ArchSpec should support
+
+Removing the framework-root backlog does not reduce delivery viability.
+
+The ability to create an application and its formal deliverables comes from:
+
+- the three manifests,
+- the decision records,
+- the lifecycle guidance,
+- and the reserved product repository under `source/`.
+
+The table below describes the main deliverables that should remain viable in the current framework model.
+
+| Deliverable | Primary source | Typical stage | Notes |
+|---|---|---|---|
+| E-R diagram | `products/<slug>/product-spec.yaml` entities and relationships | Before code and during structural changes | Already viable from `domains.entities`. |
+| Use-case catalog and use-case diagram | `actors`, `roles`, `use_cases`, `workflows` in the product spec | Before code and whenever scope changes | Already viable from the current product spec structure. |
+| Wireframe pack | `ui.modules`, reports, roles, workflows | Before code and after UX-affecting changes | Viable as structural wireframes today; high-fidelity design still depends on deeper UX conventions. |
+| Technical solution specification | `project-spec.yaml` + `scaffold/architecture-manifest.yaml` + active `product-spec.yaml` | Before bootstrap and refreshed per major increment | Viable as a formal design document that explains architecture, runtime, modules, flows, and constraints. |
+| Component compatibility matrix | architecture technology profile, variation points, and product required capabilities | Before implementation and before release | Viable as a cross-check between stack choices, versions, and requested capabilities. |
+| Object model or OOP/class documentation | product entities plus implementation under `source/` | After the first implementation skeleton and refreshed during development | Partly spec-derived before code, strongest once classes and services exist in the product repo. |
+| Unit test suites | architecture test strategy, product acceptance criteria, workflows, and implemented code | During development and verification | Viable because the framework already declares `pytest` and `vitest` as the intended test tools. |
+| Reports and import/export templates | product report/import/export sections plus architecture reporting stack | During implementation and verification | Already viable as formal outputs even before full generator automation exists. |
+
+This is the practical rule:
+
+- design artifacts can be derived as soon as the product spec is rich enough,
+- implementation artifacts are created under `source/` after bootstrap,
+- and verification artifacts become stronger once tests and runtime exist inside the product repository.
+
+## Lifecycle with ArchSpec
+
+For the full formal lifecycle and deliverable catalog, see:
+
+`LIFECYCLE-ROADMAP.md`
+
+The condensed lifecycle below is the practical working model for most product efforts built with this framework.
+
+```mermaid
+flowchart TD
+    A[1. Frame the initiative\nproblem, stakeholders, scope, outcomes]
+    B[2. Define or confirm architecture\nstack, runtime, capabilities, variation points]
+    C[3. Define the product\nentities, workflows, reports, rules, UI]
+    D[4. Compose the workspace\nactivate product and architecture in project-spec.yaml]
+    E[5. Plan the delivery work\nuse external tracking or product-local tracking]
+    F[6. Bootstrap product repo\nclone or init nested repo under source/]
+    G[7. Derive and implement\ncode, migrations, views, runtime]
+    H[8. Verify and accept\nreview drift, tests, reports, runtime]
+    I[9. Release and evolve\nhandover, change requests, next iterations]
+
+    A --> B --> C --> D --> E --> F --> G --> H --> I
+    I --> E
+
+    R[Continuous lane:\nrequirements management] -.-> A
+    R -.-> C
+    R -.-> G
+    R -.-> I
+
+    X[Continuous lane:\ndelivery tracking] -.-> E
+    X -.-> G
+    X -.-> H
+```
+
+### Phase 1. Frame the initiative
+
+Purpose:
+
+- define why the product exists,
+- identify stakeholders,
+- define scope and non-scope,
+- define expected outcomes and constraints.
+
+Primary outputs:
+
+- problem statement,
+- success outcomes,
+- scope,
+- assumptions,
+- initial requirement set.
+
+Primary owner files:
+
+- `products/<slug>/product-spec.yaml`
+- supporting documents as needed
+
+### Phase 2. Define or confirm architecture
+
+Purpose:
+
+- decide whether the existing architecture is sufficient,
+- declare stack choices and runtime shape,
+- declare reusable technical capabilities,
+- identify technical variation points.
+
+Primary outputs:
+
+- validated or updated `scaffold/architecture-manifest.yaml`,
+- architecture decisions in `adrs/`,
+- clarified capability expectations.
+
+Primary owner files:
+
+- `scaffold/architecture-manifest.yaml`
+- `adrs/`
+
+### Phase 3. Define the product
+
+Purpose:
+
+- turn the business idea into implementation-grade product definition,
+- specify entities, behaviors, workflows, permissions, reports, imports, exports, and UI modules,
+- reduce hidden interpretation before code starts.
+
+Primary outputs:
+
+- rich `products/<slug>/product-spec.yaml`,
+- derived design artifacts such as E-R diagrams, wireframes, use-case catalogs, and use-case diagrams,
+- technical solution specification draft,
+- component compatibility matrix draft,
+- acceptance criteria.
+
+Primary owner files:
+
+- `products/<slug>/product-spec.yaml`
+
+### Phase 4. Compose the workspace
+
+Purpose:
+
+- explicitly select which product and which architecture are active,
+- define generation scope and composition rules.
+
+Primary outputs:
+
+- updated `project-spec.yaml`,
+- explicit active context for future work.
+
+Primary owner file:
+
+- `project-spec.yaml`
+
+### Phase 5. Plan the iteration
+
+Purpose:
+
+- make work traceable before coding,
+- define one coherent change scope,
+- connect the work to the chosen delivery tracker.
+
+Primary outputs:
+
+- backlog item, issue, or delivery ticket in the chosen tool,
+- optional delivery notes in the product repository after bootstrap,
+- explicit scope for the next implementation increment.
+
+### Phase 6. Bootstrap the product repository
+
+Purpose:
+
+- create the physical runtime workspace for the application,
+- keep the framework repo separate from the product repo,
+- make room for normal software development under `source/`.
+
+Primary outputs:
+
+- nested product repository under `source/`,
+- product-local `.git`,
+- initial runtime skeleton such as `source/Dockerfile`, `source/src/`, and related files.
+
+Primary owner path:
+
+- `source/`
+
+### Phase 7. Derive and implement
+
+Purpose:
+
+- turn the manifests into concrete software artifacts,
+- implement backend, frontend, migrations, runtime, reports, and import/export flows,
+- keep implementation traceable to the manifests.
+
+Primary outputs:
+
+- product code,
+- migrations,
+- report templates,
+- technical solution specification updates,
+- component compatibility matrix updates,
+- object model or class documentation,
+- unit test suites,
+- runtime files,
+- generated or handwritten implementation artifacts inside the product repo.
+
+Primary owner path:
+
+- `source/`
+
+### Phase 8. Verify and accept
+
+Purpose:
+
+- check that implementation matches the manifests,
+- validate tests, runtime behavior, reports, and data rules,
+- decide whether the increment is acceptable.
+
+Primary outputs:
+
+- test evidence,
+- drift review,
+- refreshed design and technical deliverables when behavior changed,
+- acceptance result,
+- documented blockers or follow-up work.
+
+### Phase 9. Release and evolve
+
+Purpose:
+
+- package the current increment,
+- hand it over for operation or review,
+- create the next controlled change cycle.
+
+Primary outputs:
+
+- release candidate or release package,
+- updated delivery tracker,
+- new change backlog,
+- updated ADRs when structural decisions change.
+
+The most important idea is this:
+
+- the manifests define,
+- delivery tracking coordinates,
+- the nested product repository implements,
+- and release decisions are made from evidence, not intuition.
+
+## How to use this scaffolding to develop an application
+
+The correct workflow is always:
+
+1. define or update the right manifest,
+2. record the work in the chosen tracker when needed,
+3. validate the manifest boundaries,
+4. bootstrap the product repository inside `source/` if it does not exist yet,
+5. derive implementation work from those manifests,
+6. update code, migrations, UI, and runtime artifacts inside `source/`,
+7. verify that the implementation still matches the manifests,
+8. update product-local delivery notes only if the concrete product uses them.
+
+Do not start from code unless you are measuring drift or applying a previously defined manifest change.
+
+## Recommended workflow in practice
+
+### Step 1. Decide what kind of change you are making
+
+Before editing anything, classify the change.
+
+If the change is about:
+
+- stack,
+- language,
+- backend framework,
+- frontend framework,
+- database engine,
+- delivery model,
+- migration conventions,
+- reusable technical capability,
+
+then edit:
+
+`scaffold/architecture-manifest.yaml`
+
+If the change is about:
+
+- product purpose,
+- domain entities,
+- business rules,
+- reports,
+- import/export behavior,
+- screens,
+- user workflows,
+- product KPIs,
+
+then edit:
+
+`products/<slug>/product-spec.yaml`
+
+If the change is about:
+
+- which product is active,
+- which architecture manifest is active,
+- how the repository composes modules,
+- what categories of artifacts should be generated,
+
+then edit:
+
+`project-spec.yaml`
+
+### Step 2. Update the manifest before code
+
+This is the most important operating rule.
+
+Never implement first and document later.
+
+Instead:
+
+1. update the manifest,
+2. let the manifest describe the new truth,
+3. derive code changes from it.
+
+If the manifest cannot express a needed concept yet, extend the manifest structure first.
+
+### Step 3. Check whether the change crosses layers
+
+Some requests look small but actually cross boundaries.
+
+Examples:
+
+- "Add birth date to a person."
+  This is product-level because it changes the product domain.
+
+- "Switch from SQLite to PostgreSQL."
+  This is architecture-level because it changes infrastructure strategy.
+
+- "Add a bulk CSV import capability that future products can reuse."
+  This is architecture-level because it adds a reusable capability.
+
+- "Activate a second product using the same architecture."
+  This is workspace-level because composition changes.
+
+If a change touches more than one layer, update the owning layer first and then propagate the consequences.
+
+### Step 4. Propagate into implementation
+
+After the manifests are correct, implementation work may include:
+
+- ORM models,
+- API schemas,
+- services,
+- database migrations,
+- frontend views,
+- report templates,
+- runtime files,
+- environment configuration.
+
+These are outputs of the manifests, not peer sources of truth.
+
+### Step 5. Verify drift
+
+At the end of a change, verify:
+
+- does the code match the architecture manifest?
+- does the code match the product spec?
+- do migrations preserve the intended data strategy?
+- do reports and UI reflect the product behavior?
+- does the runtime reflect the declared technical profile?
+
+If not, the implementation still has drift.
+
+## How to create a new application with this scaffolding
+
+To create a new product on top of the same scaffolding:
+
+1. create a new folder under `products/`,
+2. create `products/<new-slug>/product-spec.yaml`,
+3. describe the product purpose,
+4. declare the required capabilities,
+5. define its domain entities,
+6. define rules, screens, reports, imports, and exports,
+7. register it in `project-spec.yaml`,
+8. decide whether it becomes the active product.
+
+When implementation starts, the product should be materialized under:
+
+- `source/` as the root of the product repository
+- and typically `source/src/` for its application code inside that repository.
+
+The framework repository should not pre-populate `source/` with application files.
+
+### Minimal example
+
+```text
+products/
+`-- asset-tracking/
+    `-- product-spec.yaml
+```
+
+Then update `project-spec.yaml` to point `active_product_spec` to that new product if needed.
+
+## Worked example: building a platform with `GPT-5.1-Codex-Max`
+
+This example shows how a team could use ArchSpec from the very beginning of a project through the first implementation cycles.
+
+Assumption:
+
+- you are using Codex with the model `gpt-5.1-codex-max`,
+- ArchSpec is the framework repository,
+- and the new application repository will be created later under `source/`.
+
+We will use a fictional platform called `vendor-asset-control` as the example.
+
+Important maturity note:
+
+- Steps 0 through 7 are fully compatible with the framework as it exists today.
+- Steps 8 through 11 describe the intended delivery workflow, but today they are executed primarily through guided implementation by Codex rather than through a finished schema-backed generator pipeline.
+- Full deterministic regeneration still depends on future work such as manifest schemas, validators, capability contracts, and generators.
+
+### Step 0. Start the engagement correctly
+
+Goal:
+
+- start from framework context, not from random code generation.
+
+Human actions:
+
+1. open the ArchSpec framework repository,
+2. decide whether the current architecture manifest can support the new product,
+3. choose `gpt-5.1-codex-max` as the working model in Codex,
+4. ask Codex to read the framework before proposing implementation.
+
+Recommended prompt:
+
+```text
+Read AGENTS.md, project-spec.yaml, scaffold/architecture-manifest.yaml, README.md, and REFERENCES.md.
+Explain the framework boundaries and prepare to define a new product called vendor-asset-control without writing application code yet.
+```
+
+Expected result:
+
+- Codex understands the framework,
+- Codex does not jump into source code generation too early,
+- and the conversation starts at the correct layer.
+
+### Step 1. Define the business problem and scope
+
+Goal:
+
+- capture why the platform exists and what it must solve.
+
+Human input examples:
+
+- track company assets by vendor and location,
+- assign assets to employees,
+- record maintenance and replacement history,
+- generate accountability and depreciation reports,
+- keep the first release internal-only.
+
+Recommended prompt:
+
+```text
+Create a first draft of products/vendor-asset-control/product-spec.yaml focused on business context, scope, out-of-scope boundaries, actors, and intended outcomes.
+Do not decide the technical stack in the product spec.
+```
+
+Expected result:
+
+- a first product definition under `products/vendor-asset-control/product-spec.yaml`,
+- explicit scope and non-scope,
+- explicit actors and goals,
+- a better requirement baseline than a plain note-taking document.
+
+### Step 2. Confirm architecture fit
+
+Goal:
+
+- verify whether the current architecture can support the product without leaking business logic into architecture.
+
+Questions to answer:
+
+- does the product need dashboards,
+- does it need reporting,
+- does it need imports,
+- does it need file uploads,
+- does it need a capability not yet declared by the framework.
+
+Recommended prompt:
+
+```text
+Review the active architecture manifest and compare it to vendor-asset-control requirements.
+List which existing capability modules are sufficient and which new reusable capability modules would need to be added before implementation.
+```
+
+Expected result:
+
+- explicit fit or gap analysis,
+- architecture changes, if any, applied to `scaffold/architecture-manifest.yaml`,
+- no product-specific entities added to architecture by mistake.
+
+### Step 3. Enrich the product spec until it is implementation-grade
+
+Goal:
+
+- make the product spec rich enough to drive implementation with minimal hidden interpretation.
+
+What Codex should help define:
+
+- entities and relationships,
+- field validations,
+- actors and roles,
+- permissions,
+- use cases,
+- workflows,
+- state models,
+- reports,
+- imports and exports,
+- non-functional requirements,
+- acceptance criteria,
+- sample scenarios.
+
+Recommended prompt:
+
+```text
+Expand products/vendor-asset-control/product-spec.yaml into an implementation-grade product spec.
+Include entities, field validations, workflows, state models, reports, imports, exports, acceptance criteria, and sample scenarios.
+Keep the file in business language if that fits the stakeholders.
+```
+
+Expected result:
+
+- a product manifest that is no longer merely descriptive,
+- a much stronger basis for diagrams, tests, screens, and code generation.
+
+### Step 4. Ask for design artifacts before code
+
+Goal:
+
+- validate the spec visually and structurally before implementation begins.
+
+Recommended prompts:
+
+```text
+From the active product spec, derive an E-R diagram.
+```
+
+```text
+From the active product spec, derive a wireframe structure for the platform.
+```
+
+```text
+From the active product spec, enumerate all use cases grouped by actor.
+```
+
+```text
+From project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, draft the technical solution specification for the product.
+Explain runtime topology, modules, data strategy, testing strategy, report strategy, and key implementation constraints.
+```
+
+```text
+From the active architecture manifest and product spec, create a component compatibility matrix.
+Show how requested capabilities map to stack components, runtimes, and expected deliverables.
+```
+
+Expected result:
+
+- design review artifacts derived from the spec,
+- a technical solution specification grounded in the manifests,
+- a component compatibility matrix that exposes architectural gaps early,
+- earlier discovery of missing entities, flows, or permissions,
+- lower risk of rewriting the product later.
+
+### Step 5. Activate the new product in workspace composition
+
+Goal:
+
+- make the workspace point to the right product.
+
+Recommended prompt:
+
+```text
+Update project-spec.yaml so vendor-asset-control becomes the active product while preserving the current architecture manifest unless a change is required.
+```
+
+Expected result:
+
+- `project-spec.yaml` points to the new product,
+- future iterations have a clear active context.
+
+### Step 6. Create the first delivery work item
+
+Goal:
+
+- create traceable engineering work rather than anonymous changes.
+
+Recommended prompt:
+
+```text
+Define the first delivery work item for bootstrapping vendor-asset-control.
+If we are using GitHub Issues or another external tracker, describe the title, scope, and acceptance conditions.
+If the product repository later adopts its own in-repo delivery log, define that inside source/, not in the framework root.
+```
+
+Expected result:
+
+- a clearly scoped first delivery item,
+- traceability for the first implementation increment,
+- and no framework-root backlog artifact.
+
+### Step 7. Bootstrap the product repository under `source/`
+
+Goal:
+
+- create the actual application repository in the reserved workspace.
+
+Human options:
+
+1. clone an empty remote repository into `source/`,
+2. or initialize a new local Git repository inside `source/`.
+
+Typical shell examples:
+
+```bash
+git clone <new-product-repo-url> source
+```
+
+or
+
+```bash
+mkdir -p source
+cd source
+git init
+```
+
+Expected result:
+
+- `source/` stops being an empty reserved directory,
+- the product now has its own Git boundary,
+- the framework remains separate.
+
+### Step 8. Ask Codex to create the initial application skeleton from the manifests
+
+Goal:
+
+- create the first real implementation artifacts inside the nested product repository.
+
+Current-state interpretation:
+
+- at the present maturity of ArchSpec, this means Codex should implement the first application skeleton by using the manifests as the governing source of truth,
+- not that the repository already contains a fully automated one-command generator.
+
+Recommended prompt:
+
+```text
+Using project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, create the initial application skeleton inside source/.
+Create the runtime skeleton, source/Dockerfile, frontend and backend structure, and the first implementation for the main entities.
+Also create the first round of unit tests and the initial object-model documentation inside the product repository.
+Keep the code aligned with the manifests and explain any assumptions.
+```
+
+Expected result:
+
+- initial runtime files under `source/`,
+- application structure such as `source/src/`,
+- first domain-aligned implementation based on the manifests,
+- first unit test skeletons,
+- first object-model or class documentation inside the product repo,
+- and a clear record of any assumptions that still need to be turned into formal framework contracts.
+
+### Step 9. Develop through spec-as-source iterations
+
+Goal:
+
+- keep implementation evolving from the manifests rather than bypassing them.
+
+Typical iteration pattern:
+
+1. request a product change,
+2. update the manifest first,
+3. track the work in the chosen delivery system,
+4. propagate to code inside `source/`,
+5. verify drift,
+6. update product-local delivery notes only if the product repository uses them.
+
+Example prompt:
+
+```text
+Add an asset maintenance schedule feature.
+First update the active product spec with entities, workflows, validations, reports, and acceptance criteria.
+Then implement the required changes inside source/ and update the chosen delivery tracker or product-local notes if they exist.
+```
+
+Expected result:
+
+- every significant implementation increment is explainable from the manifests,
+- the chosen delivery system shows change history,
+- future agents can resume work without guessing.
+
+### A realistic two-iteration sequence
+
+The example becomes much more useful if it shows how definition, implementation, testing, and deliverables evolve together.
+
+The sequence below is realistic for the framework as it exists today.
+
+#### Iteration A. First definition cycle
+
+Goal:
+
+- produce the first implementation-grade scope before any product code is written.
+
+Recommended prompt:
+
+```text
+Create the first implementation-grade version of products/vendor-asset-control/product-spec.yaml.
+Include business context, actors, roles, entities, use cases, workflows, UI modules, reports, imports, exports, non-functional requirements, and acceptance criteria.
+Then derive an E-R diagram, wireframe structure, use-case catalog, technical solution specification draft, and component compatibility matrix.
+Do not write code under source/ yet.
+```
+
+Expected outputs:
+
+- first rich product spec,
+- first E-R diagram,
+- first wireframe pack,
+- first use-case catalog or diagram,
+- technical solution specification v0.1,
+- compatibility matrix v0.1.
+
+Typical review findings from this iteration:
+
+- missing permissions,
+- ambiguous relationships,
+- missing states,
+- unclear report filters,
+- UI gaps between actors.
+
+#### Iteration B. Second definition cycle
+
+Goal:
+
+- refine the spec after reviewing the first artifact pack, before implementation expands.
+
+Example of a realistic clarification:
+
+- the review reveals that maintenance events, asset condition history, and replacement recommendations are missing from the original product scope.
+
+Recommended prompt:
+
+```text
+Refine products/vendor-asset-control/product-spec.yaml based on the first review.
+Add maintenance-event behavior, replacement recommendations, any missing permissions, and the additional report definitions required by those changes.
+Refresh the E-R diagram, wireframes, use cases, technical solution specification, and compatibility matrix.
+```
+
+Expected outputs:
+
+- revised product spec,
+- revised design artifacts,
+- better implementation readiness,
+- fewer hidden assumptions before code begins.
+
+#### Iteration C. First implementation cycle
+
+Goal:
+
+- bootstrap the product repo and implement the first vertical slice from the revised manifests.
+
+Recommended prompt:
+
+```text
+Using the active manifests, create the initial product repository under source/ and implement the first vertical slice for vendor, location, asset, employee, and asset-assignment management.
+Include backend and frontend skeletons, migrations, source/Dockerfile, and initial unit tests.
+Also write object-model documentation for the first domain entities and services inside source/docs/architecture/.
+```
+
+Expected outputs:
+
+- nested product repo under `source/`,
+- initial backend and frontend skeleton,
+- initial migrations,
+- first unit tests,
+- object-model documentation,
+- first runnable development container setup.
+
+Typical verification at the end of this cycle:
+
+- run backend unit tests,
+- run frontend unit tests,
+- review drift against manifests,
+- update the technical solution specification with implementation decisions that were already implied by the manifests.
+
+#### Iteration D. Second implementation cycle
+
+Goal:
+
+- incorporate a new requirement or clarification without abandoning the spec-as-source discipline.
+
+Example of a realistic adjustment during development:
+
+- once the first slice is running, stakeholders ask for maintenance scheduling and an executive aging dashboard.
+
+Recommended prompt:
+
+```text
+First update the active product spec to add maintenance scheduling, dashboard indicators, validations, reports, and acceptance criteria.
+Then implement the required backend, frontend, tests, and documentation changes under source/.
+Refresh the E-R diagram, wireframes, use-case diagram, technical solution specification, compatibility matrix, and object-model documentation to keep them aligned with the new behavior.
+```
+
+Expected outputs:
+
+- manifest-first change,
+- aligned implementation under `source/`,
+- updated unit tests,
+- refreshed design and engineering deliverables,
+- lower drift risk than a code-first change.
+
+### Step 10. Verify the product properly
+
+Goal:
+
+- confirm that the implementation is not only present, but correct.
+
+Verification should include:
+
+- manifest-to-code drift review,
+- backend tests,
+- frontend tests,
+- migration review,
+- report review,
+- import/export behavior review,
+- E-R diagram and use-case diagram refresh when the domain changed,
+- wireframe refresh when user interaction changed,
+- technical solution specification review,
+- component compatibility matrix review,
+- object-model documentation review,
+- runtime validation with Docker or the chosen delivery profile.
+
+Current-state note:
+
+- until manifest schemas and validators exist, part of this verification remains human- and agent-driven rather than automatically enforced by the framework.
+
+Recommended prompt:
+
+```text
+Review the implementation under source/ against the active manifests.
+List drift, missing tests, missing reports, missing runtime artifacts, and any stale engineering deliverables before release.
+If the nested product repository already defines concrete test commands, run them and summarize the results.
+```
+
+Expected result:
+
+- a release candidate with evidence,
+- or a precise list of gaps to close before acceptance.
+
+### Step 11. Release and continue the next cycle
+
+Goal:
+
+- close one delivery increment cleanly and prepare the next one.
+
+Typical close-out actions:
+
+- close the delivery item,
+- write new ADRs if architecture changed,
+- package or archive the current deliverable set inside the product repository as needed,
+- leave the next recommended increment visible in the chosen tracker,
+- tag or release the nested product repository if appropriate.
+
+Recommended prompt:
+
+```text
+Close the current delivery item, summarize what was delivered, note any remaining risks, and propose the next recommended increment for vendor-asset-control.
+```
+
+Expected result:
+
+- clean delivery continuity,
+- lower onboarding cost for the next session,
+- and a product that can continue to evolve without losing architectural discipline.
+
+## Why the worked example matters
+
+This walkthrough illustrates the intended ArchSpec operating model:
+
+- requirements are made explicit before implementation,
+- architecture is kept reusable,
+- the product is defined in its own manifest,
+- delivery work is traceable,
+- implementation lives in a separate product repository under `source/`,
+- and Codex acts as a disciplined implementation partner rather than an improvisational code generator.
+
+If a future user can follow this sequence from a blank framework checkout to a real product repository under `source/`, then the framework is doing its job.
+
+## How to design a good product spec
+
+A strong product spec should describe the business clearly without leaking technical implementation details that belong to architecture.
+
+A good product spec includes:
+
+- product identity,
+- product purpose,
+- required capabilities,
+- operational scope,
+- domain entities,
+- field definitions,
+- relationships,
+- UI modules,
+- reports,
+- business rules,
+- change playbooks when helpful.
+
+A weak product spec usually has one of these problems:
+
+- it is too vague to drive implementation,
+- it hard-codes framework choices,
+- it mixes business rules with technical setup,
+- it assumes hidden behavior not written in the file.
+
+## How to design a good architecture manifest
+
+A strong architecture manifest should be reusable by multiple products.
+
+It should express:
+
+- backend language and framework,
+- frontend language and framework,
+- data engine strategy,
+- migration conventions,
+- delivery topology,
+- testing expectations,
+- reusable capability modules,
+- variation points,
+- generation contract.
+
+A weak architecture manifest usually has one of these problems:
+
+- it contains product terminology,
+- it encodes business entities,
+- it is too tied to one example application,
+- it lacks variation points,
+- it lacks rules for what belongs in the manifest.
+
+## Capability modules
+
+Capability modules are the bridge between reusable architecture and specific products.
+
+They let products ask for reusable behavior without directly selecting frameworks.
+
+For example:
+
+- a product may require `dashboard_kpi`,
+- the architecture manifest decides that dashboards are implemented with React and ECharts,
+- another future architecture profile could implement the same capability differently.
+
+This indirection is important because it prevents business requirements from being tightly coupled to one stack implementation.
+
+## Variation points
+
+Variation points define where the architecture is intentionally flexible.
+
+Current examples include:
+
+- database engine,
+- deployment mode,
+- frontend profile,
+- backend profile.
+
+These are useful because they allow change without redefining the whole framework.
+
+A variation point should:
+
+- have a current value,
+- list allowed values,
+- remain technical, not business-oriented.
+
+## How to decide whether something belongs in architecture or product
+
+Use this test:
+
+Ask whether the concept would still exist if the product changed completely.
+
+If the answer is yes, it probably belongs in architecture.
+
+Examples:
+
+- FastAPI: architecture
+- PostgreSQL: architecture
+- migration naming convention: architecture
+- dashboard rendering engine: architecture
+- user certification expiry rule: product
+- manufacturer entity: product
+- executive report totals: product
+
+Another test:
+
+Ask whether another completely different product could reuse the same concept unchanged.
+
+If yes, it likely belongs in architecture.
+
+If no, it likely belongs in product.
+
+## How to use this repository with an AI coding agent
+
+The expected agent workflow is:
+
+1. read `project-spec.yaml`,
+2. read the referenced architecture manifest,
+3. read the active product spec,
+4. identify the correct ownership layer for the request,
+5. update the manifest first,
+6. then implement derived code changes.
+
+Good requests:
+
+- "Create a new product under `products/` for asset tracking using the existing architecture."
+- "Extend the architecture manifest with a reusable CSV import capability."
+- "Switch the active product in `project-spec.yaml`."
+- "Add a new report to the active product spec."
+
+Bad requests:
+
+- "Just build the app from intuition."
+- "Read the code and guess the business rules."
+- "Implement first and update the manifests later."
+
+## Example: changing the database engine
+
+This is an architecture change.
+
+The right sequence is:
+
+1. update `scaffold/architecture-manifest.yaml`,
+2. change `technology_profile.data.engine`,
+3. update backend dependencies,
+4. update connection configuration,
+5. review migration compatibility,
+6. propagate the change to implementation.
+
+The product spec should not own this decision unless the product is merely expressing a compatibility requirement.
+
+## Example: adding a new product field
+
+This is a product change.
+
+The right sequence is:
+
+1. update `products/<slug>/product-spec.yaml`,
+2. add the field to the correct entity,
+3. update related rules or UI requirements if needed,
+4. generate or implement the corresponding migration,
+5. update backend and frontend code,
+6. verify reports and exports if affected.
+
+The architecture manifest should only change if the new requirement demands a reusable technical capability that does not exist yet.
+
+## Example: adding a new reusable capability
+
+Suppose multiple products will need CSV bulk import.
+
+The right sequence is:
+
+1. extend `scaffold/architecture-manifest.yaml`,
+2. add a new capability module such as `csv_bulk_import`,
+3. define any architecture rules or variation points needed,
+4. let products declare that capability when they need it,
+5. derive implementation modules from that capability.
+
+This keeps the reusable concern out of any one product definition.
+
+## Naming and language guidance
+
+Outside `products/`, the repository should stay in English so that the scaffolding contract remains consistent and reusable.
+
+Inside `products/`, product definitions may use the language that best fits the business domain and stakeholders.
+
+That means this split is acceptable:
+
+- architecture and workspace manifests in English,
+- product terminology in the business language,
+- generated code conventions chosen by the active architecture.
+
+## Recommended authoring rules
+
+When editing manifests:
+
+- keep each file focused on its own layer,
+- prefer explicit fields over implicit assumptions,
+- avoid hiding rules in prose if they should be machine-derivable later,
+- use stable identifiers for reusable capabilities,
+- keep business terms in the product layer,
+- keep technical terms in the architecture layer,
+- update examples when the contract changes,
+- avoid duplicating the same rule across layers unless one layer is only referencing the owner.
+
+## Suggested future additions
+
+The repository already has a strong specification boundary. The next useful additions would be:
+
+- a product template under `products/_template/`,
+- a formal schema for each manifest type,
+- a manifest validator,
+- a generator pipeline,
+- capability-to-code mapping modules,
+- architecture profiles for different stacks,
+- example products that stress different capability combinations.
+
+## Practical mindset
+
+When using this scaffolding, think in this order:
+
+1. What is the product trying to do?
+2. Which capabilities does it need?
+3. Which architecture provides those capabilities?
+4. How should the workspace compose them?
+5. Which artifacts should be generated or implemented from that combination?
+
+That sequence is the heart of the framework.
+
+Do not start with:
+
+- which controller to write,
+- which table to patch manually,
+- which frontend component to improvise first.
+
+Those are implementation details that come after the manifests.
+
+## In short
+
+This scaffolding is meant to help you build many applications through one reusable architectural contract.
+
+Use:
+
+- `project-spec.yaml` to compose,
+- `scaffold/architecture-manifest.yaml` to define reusable technical architecture,
+- `products/<slug>/product-spec.yaml` to define a concrete product.
+
+If you keep that separation strict, the scaffolding stays reusable.
+
+If you blur those layers, the framework collapses back into a one-off application repo.

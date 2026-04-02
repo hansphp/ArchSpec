@@ -1,0 +1,154 @@
+architecture:
+  name: "Internal Web App Scaffold"
+  version: "0.1.0"
+  status: "definition"
+  paradigm: "spec-as-source"
+  maturity_note: "The framework target is spec-as-source even though schemas, validators, and generators are not complete yet."
+  style: "modular_monolith"
+  purpose: "Define the reusable technical core for generating internal applications from specifications."
+  non_goals:
+    - "Do not describe domain behavior or business rules."
+    - "Do not contain product-specific entities."
+
+principles:
+  - "Keep architecture and product clearly separated."
+  - "Allow the product spec to be replaced without rewriting the scaffolding."
+  - "Keep the stack parametric and explicitly versionable."
+  - "Every executable artifact must be derivable from manifests."
+  - "Keep framework files outside the product source workspace."
+  - "Do not mix framework governance tooling with product runtime artifacts."
+
+technology_profile:
+  runtime:
+    workspace_topology: "framework_repo_plus_nested_product_repo"
+    product_repository_shape: "single_repo"
+    application_shape: "web_app"
+    container_entrypoint: "docker compose up"
+    exposed_port: 8000
+  backend:
+    enabled: true
+    language: "python"
+    language_version: "3.x"
+    framework: "fastapi"
+    api_style: "rest"
+    orm: "sqlalchemy"
+    validation: "pydantic"
+  frontend:
+    enabled: true
+    language: "typescript"
+    runtime_version: "node 20.x"
+    framework: "react"
+    bundler: "vite"
+    charts: "echarts"
+  data:
+    engine: "sqlite"
+    migrations: "alembic"
+    migration_naming: "YYYYMMDDhhmm_description"
+    zero_downtime: "not_required_for_mvp"
+    id_strategy: "uuid"
+    persistence: "file ./data/app.db mounted as a volume"
+    seed_strategy: "Load sample data through a startup script when the database is empty"
+  reporting:
+    pdf: "weasyprint"
+    spreadsheets: "openpyxl"
+  delivery:
+    containerization: "docker_compose"
+    topology: "frontend_and_backend_in_a_single_service_for_mvp"
+    exposure: "localhost_only"
+  quality:
+    backend_tests: "pytest"
+    frontend_tests: "vitest"
+    linting: "to_be_defined"
+
+capability_modules:
+  - id: "catalog_crud"
+    description: "Simple catalogs with CRUD, filters, and forms."
+  - id: "profile_detail"
+    description: "Detail views for primary entities."
+  - id: "dashboard_kpi"
+    description: "Dashboards with indicators and charts."
+  - id: "pdf_report"
+    description: "Downloadable PDF reports."
+  - id: "excel_report"
+    description: "Excel export."
+  - id: "excel_template_import"
+    description: "Excel templates for bulk import."
+  - id: "file_asset_upload"
+    description: "Upload of files or images associated with catalogs."
+
+repository_conventions:
+  framework_root_role: "Contains manifests, ADRs, policies, generators, templates, and framework-level documentation."
+  product_source_root: "source"
+  product_source_role: "Acts as the reserved root of a nested product repository where generated and developed artifacts live."
+  product_source_policy:
+    initial_state: "The directory should remain absent or empty in the framework repository until product bootstrap."
+    vcs_boundary:
+      - "The framework repository must ignore source/."
+      - "The product repository may own its own .git directory under source/."
+  tracking_boundary:
+    framework_tracking_location: "external_to_repository"
+    product_tracking_location: "product_repository_defined"
+    rule: "Framework backlog and planning stay outside the framework repo; product tracking may be defined later inside the product repository if needed."
+  default_product_layout:
+    repository_root: "source"
+    application_root: "source/src"
+    supporting_paths:
+      - "source/docs/"
+      - "source/docs/architecture/"
+      - "source/tests/"
+    runtime_examples:
+      - "source/Dockerfile"
+      - "source/docker-compose.yml"
+      - "source/src/"
+
+variation_points:
+  database_engine:
+    current: "sqlite"
+    allowed: ["sqlite", "mariadb", "postgresql"]
+  deployment_mode:
+    current: "docker_compose_local"
+    allowed: ["docker_compose_local", "single_vm", "kubernetes"]
+  frontend_profile:
+    current: "react_vite_dashboard"
+    allowed: ["react_vite_dashboard", "react_vite_forms_only", "none"]
+  backend_profile:
+    current: "fastapi_sqlalchemy"
+    allowed: ["fastapi_sqlalchemy"]
+
+generation_contract:
+  layers:
+    - "orm_models"
+    - "api_schemas"
+    - "services"
+    - "frontend_views"
+    - "database_migrations"
+    - "report_templates"
+    - "test_suites"
+    - "technical_solution_specification"
+    - "component_compatibility_matrix"
+    - "object_model_documentation"
+    - "entity_relationship_diagrams"
+    - "use_case_diagrams"
+    - "wireframes"
+    - "runtime_files"
+  rules:
+    - "Stack changes are made here."
+    - "Products consume capabilities, not concrete frameworks."
+    - "If a product requires a new capability, extend this manifest first."
+    - "Generated product outputs must be written inside the product source root."
+    - "Framework artifacts and product artifacts must remain physically separated."
+    - "The framework must not keep placeholder application files inside the product source root."
+
+playbooks:
+  switch_db_engine:
+    steps:
+      - "Change technology_profile.data.engine."
+      - "Update the backend driver or dependencies."
+      - "Regenerate environment variables and connection configuration."
+      - "Review migrations for dialect differences."
+  add_new_product:
+    steps:
+      - "Create products/<slug>/product-spec.yaml."
+      - "Declare the capabilities required by the product."
+      - "Register the product in project-spec.yaml."
+      - "Keep this manifest free of business logic."

@@ -1,0 +1,99 @@
+workspace:
+  name: "ArchSpec"
+  paradigm: "VibeArchitector"
+  version: "0.2.0"
+  stage: "scaffold_definition"
+  purpose: "Separate the reusable scaffolding from the definition of the active product."
+  target_operating_mode: "spec_as_source"
+  spec_to_code_expectation: "Manifests must become detailed enough to map to implementation almost literally."
+  source_of_truth:
+    composition_manifest: "project-spec.yaml"
+    architecture_manifest: "scaffold/architecture-manifest.yaml"
+    active_product_spec: "products/control-capacitacion/product-spec.yaml"
+
+modules:
+  scaffold:
+    role: "Defines the reusable technology stack, runtime, deployment shape, tooling, and technical rules."
+    path: "scaffold/architecture-manifest.yaml"
+  active_product:
+    id: "control-capacitacion"
+    role: "Example product used to validate the scaffolding."
+    path: "products/control-capacitacion/product-spec.yaml"
+
+tracking_policy:
+  framework_scaffold_tracking:
+    location: "external_to_repository"
+    preferred_tools:
+      - "GitHub Issues"
+      - "GitHub Projects"
+      - "equivalent external planning tooling"
+    rule: "ArchSpec does not keep a framework backlog or iteration log inside the framework repository."
+  product_delivery_tracking:
+    ownership: "product_repository"
+    location_after_bootstrap: "Defined by the concrete product repository under source/ if needed."
+    rule: "Product delivery tracking must not be created at the framework root unless the user explicitly asks for it."
+
+product_workspace:
+  root: "source"
+  role: "Reserved workspace root where a new product repository is cloned or initialized and then operated."
+  initialization_policy:
+    expected_initial_state: "The directory may be absent or empty in the framework repository."
+    allowed_bootstrap_modes:
+      - "git clone into source/"
+      - "git init inside source/"
+    vcs_boundary:
+      - "The product repository may own its own .git directory inside source/."
+      - "The framework repository should not track product files inside source/."
+  conventions:
+    - "The source workspace is reserved for the product repository, not framework placeholders."
+    - "Generated and developed product code lives under source/ once the product repository exists."
+    - "A web application may use source/src/ as the internal application root."
+    - "Formal product deliverables may live under source/docs/ once the product repository exists."
+    - "Runtime files such as source/Dockerfile belong inside the source workspace."
+    - "The framework root must stay separate from the product workspace."
+
+generation:
+  output_root: "source"
+  derived_artifacts:
+    - "backend"
+    - "frontend"
+    - "database_migrations"
+    - "reports"
+    - "import_export_templates"
+    - "technical_solution_specification"
+    - "component_compatibility_matrix"
+    - "object_model_documentation"
+    - "entity_relationship_diagrams"
+    - "use_case_diagrams"
+    - "wireframes"
+    - "test_suites"
+  composition_rules:
+    - "The architecture manifest must not contain entities or business rules."
+    - "The product spec must not lock in concrete frameworks beyond required capabilities."
+    - "Generated code must arise from the combination of the architecture manifest and the active product spec."
+    - "Derived product outputs must be created inside source/ once the product repository has been bootstrapped."
+
+evolution_protocol:
+  when_to_edit:
+    architecture_change: "Edit scaffold/architecture-manifest.yaml."
+    product_change: "Edit products/<slug>/product-spec.yaml."
+    workspace_change: "Edit project-spec.yaml."
+  workflow:
+    - "Update the correct manifest first."
+    - "Propagate the change afterwards to code, migrations, UI, reports, and runtime."
+    - "Keep the change traceable within the same commit."
+
+future_products:
+  location_pattern: "products/<slug>/product-spec.yaml"
+  onboarding_steps:
+    - "Create a new directory under products/."
+    - "Write a product-spec.yaml focused on domain and UX."
+    - "Register the product in this manifest and decide whether it will be the active one."
+    - "Reuse the same architecture manifest while the base stack remains valid."
+
+notes:
+  - "At this stage the repository is defining the scaffolding, not only a single application."
+  - "Control de Capacitacion por Fabricante acts as the initial validation case for the framework."
+  - "The framework target is spec-as-source, not only spec-first or spec-anchored."
+  - "The source/ path is reserved for a nested product repository and may hold its own .git directory."
+  - "Framework backlog management happens outside this repository."
