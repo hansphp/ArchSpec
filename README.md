@@ -82,7 +82,7 @@ The intended destination is a `spec-as-source` framework where structured manife
 |-- scaffold/
 |   `-- architecture-manifest.yaml
 `-- products/
-    `-- control-capacitacion/
+    `-- <product-slug>/
         `-- product-spec.yaml
 ```
 
@@ -671,9 +671,9 @@ products/
 
 Then update `project-spec.yaml` to point `active_product_spec` to that new product if needed.
 
-## Worked example: building a platform with `GPT-5.1-Codex-Max`
+## Worked example: building `helpdesk-lite` with `GPT-5.1-Codex-Max`
 
-This example shows how a team could use ArchSpec from the very beginning of a project through the first implementation cycles.
+This example shows how a team could use ArchSpec from the very beginning of a project through the first definition and implementation cycles of a small but serious internal application.
 
 Assumption:
 
@@ -681,7 +681,31 @@ Assumption:
 - ArchSpec is the framework repository,
 - and the new application repository will be created later under `source/`.
 
-We will use a fictional platform called `vendor-asset-control` as the example.
+We will use a fictional platform called `helpdesk-lite` as the example.
+
+Why this example is a good fit:
+
+- it is small enough to explain end to end,
+- it still has real domain complexity,
+- it needs roles, workflows, states, dashboards, and reports,
+- and it demonstrates the value of the framework without overlapping with the real product currently used as the framework validation case.
+
+The example product is an internal helpdesk for:
+
+- employees who submit incidents and service requests,
+- support agents who triage and resolve tickets,
+- support managers who monitor queues and SLA health,
+- and administrators who maintain categories and assignment rules.
+
+Typical MVP behavior for `helpdesk-lite`:
+
+- create and track tickets,
+- classify by category and priority,
+- assign tickets to agents,
+- add comments and attachments,
+- move tickets through a controlled status workflow,
+- show queue and SLA dashboards,
+- and generate operational reports.
 
 Important maturity note:
 
@@ -698,7 +722,7 @@ Goal:
 Human actions:
 
 1. open the ArchSpec framework repository,
-2. decide whether the current architecture manifest can support the new product,
+2. decide whether the current architecture manifest can support `helpdesk-lite`,
 3. choose `gpt-5.1-codex-max` as the working model in Codex,
 4. ask Codex to read the framework before proposing implementation.
 
@@ -706,7 +730,7 @@ Recommended prompt:
 
 ```text
 Read AGENTS.md, project-spec.yaml, scaffold/architecture-manifest.yaml, README.md, and REFERENCES.md.
-Explain the framework boundaries and prepare to define a new product called vendor-asset-control without writing application code yet.
+Explain the framework boundaries and prepare to define a new product called helpdesk-lite without writing application code yet.
 ```
 
 Expected result:
@@ -723,25 +747,47 @@ Goal:
 
 Human input examples:
 
-- track company assets by vendor and location,
-- assign assets to employees,
-- record maintenance and replacement history,
-- generate accountability and depreciation reports,
-- keep the first release internal-only.
+- employees need a single internal place to request support,
+- agents need a prioritized queue and assignment view,
+- managers need visibility into open volume, response time, and SLA breaches,
+- administrators need to maintain categories, priorities, and support groups,
+- the first release should stay internal-only and localhost-friendly.
 
 Recommended prompt:
 
 ```text
-Create a first draft of products/vendor-asset-control/product-spec.yaml focused on business context, scope, out-of-scope boundaries, actors, and intended outcomes.
+Create a first draft of products/helpdesk-lite/product-spec.yaml focused on business context, scope, out-of-scope boundaries, actors, and intended outcomes.
+Use helpdesk-lite as an internal support ticketing platform.
 Do not decide the technical stack in the product spec.
 ```
 
 Expected result:
 
-- a first product definition under `products/vendor-asset-control/product-spec.yaml`,
+- a first product definition under `products/helpdesk-lite/product-spec.yaml`,
 - explicit scope and non-scope,
 - explicit actors and goals,
-- a better requirement baseline than a plain note-taking document.
+- a much better requirement baseline than a plain note-taking document.
+
+At this stage, the scope should still stay compact.
+
+A sensible MVP scope for `helpdesk-lite` would be:
+
+- ticket submission,
+- ticket assignment,
+- ticket comments,
+- priority and category catalogs,
+- status workflow,
+- agent queue,
+- manager dashboard,
+- PDF and Excel reports.
+
+Out of scope for the first increment could be:
+
+- email integration,
+- chat integration,
+- public portal access,
+- complex SLA calendars,
+- multi-company tenancy.
 
 ### Step 2. Confirm architecture fit
 
@@ -753,14 +799,14 @@ Questions to answer:
 
 - does the product need dashboards,
 - does it need reporting,
-- does it need imports,
 - does it need file uploads,
-- does it need a capability not yet declared by the framework.
+- does it need import templates now or later,
+- does it need a reusable capability not yet declared by the framework.
 
 Recommended prompt:
 
 ```text
-Review the active architecture manifest and compare it to vendor-asset-control requirements.
+Review the active architecture manifest and compare it to helpdesk-lite requirements.
 List which existing capability modules are sufficient and which new reusable capability modules would need to be added before implementation.
 ```
 
@@ -770,13 +816,22 @@ Expected result:
 - architecture changes, if any, applied to `scaffold/architecture-manifest.yaml`,
 - no product-specific entities added to architecture by mistake.
 
+For this example, a likely first answer would be:
+
+- `catalog_crud` supports categories, priorities, and support groups,
+- `profile_detail` supports ticket detail views,
+- `dashboard_kpi` supports queue and SLA health views,
+- `pdf_report` and `excel_report` support manager reporting,
+- `file_asset_upload` supports ticket attachments,
+- `excel_template_import` is probably optional for the MVP and can be deferred.
+
 ### Step 3. Enrich the product spec until it is implementation-grade
 
 Goal:
 
 - make the product spec rich enough to drive implementation with minimal hidden interpretation.
 
-What Codex should help define:
+What Codex should help define for `helpdesk-lite`:
 
 - entities and relationships,
 - field validations,
@@ -785,24 +840,55 @@ What Codex should help define:
 - use cases,
 - workflows,
 - state models,
+- dashboard definitions,
 - reports,
-- imports and exports,
+- optional imports and exports,
 - non-functional requirements,
 - acceptance criteria,
 - sample scenarios.
 
+Typical first-pass entities for this example:
+
+- `Ticket`
+- `TicketComment`
+- `TicketAttachment`
+- `Category`
+- `Priority`
+- `SupportGroup`
+- `AgentAssignment`
+- `TicketStatusHistory`
+
+Typical roles for this example:
+
+- requester,
+- support_agent,
+- support_manager,
+- admin.
+
+Typical status model for this example:
+
+- `new`
+- `triaged`
+- `assigned`
+- `in_progress`
+- `resolved`
+- `closed`
+- `reopened`
+
 Recommended prompt:
 
 ```text
-Expand products/vendor-asset-control/product-spec.yaml into an implementation-grade product spec.
-Include entities, field validations, workflows, state models, reports, imports, exports, acceptance criteria, and sample scenarios.
+Expand products/helpdesk-lite/product-spec.yaml into an implementation-grade product spec.
+Include entities, field validations, workflows, state models, reports, dashboard indicators, acceptance criteria, and sample scenarios.
+Model helpdesk-lite as an internal support ticketing platform with requesters, agents, managers, and admins.
 Keep the file in business language if that fits the stakeholders.
 ```
 
 Expected result:
 
 - a product manifest that is no longer merely descriptive,
-- a much stronger basis for diagrams, tests, screens, and code generation.
+- a much stronger basis for diagrams, tests, screens, and code generation,
+- and fewer hidden requirements waiting to surprise implementation later.
 
 ### Step 4. Ask for design artifacts before code
 
@@ -813,11 +899,12 @@ Goal:
 Recommended prompts:
 
 ```text
-From the active product spec, derive an E-R diagram.
+From the active product spec, derive an E-R diagram for helpdesk-lite.
 ```
 
 ```text
-From the active product spec, derive a wireframe structure for the platform.
+From the active product spec, derive a wireframe structure for helpdesk-lite.
+Include at least: requester ticket submission, ticket detail, agent queue, manager dashboard, and admin catalog views.
 ```
 
 ```text
@@ -825,12 +912,16 @@ From the active product spec, enumerate all use cases grouped by actor.
 ```
 
 ```text
-From project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, draft the technical solution specification for the product.
-Explain runtime topology, modules, data strategy, testing strategy, report strategy, and key implementation constraints.
+From the active product spec, derive a use-case diagram narrative for helpdesk-lite.
 ```
 
 ```text
-From the active architecture manifest and product spec, create a component compatibility matrix.
+From project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, draft the technical solution specification for helpdesk-lite.
+Explain runtime topology, modules, data strategy, testing strategy, reporting strategy, and key implementation constraints.
+```
+
+```text
+From the active architecture manifest and product spec, create a component compatibility matrix for helpdesk-lite.
 Show how requested capabilities map to stack components, runtimes, and expected deliverables.
 ```
 
@@ -839,8 +930,16 @@ Expected result:
 - design review artifacts derived from the spec,
 - a technical solution specification grounded in the manifests,
 - a component compatibility matrix that exposes architectural gaps early,
-- earlier discovery of missing entities, flows, or permissions,
+- earlier discovery of missing entities, flows, permissions, or dashboard expectations,
 - lower risk of rewriting the product later.
+
+The most useful artifacts for this example at this stage are:
+
+- an E-R diagram that proves ticket relationships are clean,
+- wireframes that prove the workflow is usable for each actor,
+- a use-case catalog that proves permissions and responsibilities are coherent,
+- a technical solution specification that explains how the app will be shaped inside `source/`,
+- and a compatibility matrix that proves the current architecture really supports the requested features.
 
 ### Step 5. Activate the new product in workspace composition
 
@@ -851,7 +950,7 @@ Goal:
 Recommended prompt:
 
 ```text
-Update project-spec.yaml so vendor-asset-control becomes the active product while preserving the current architecture manifest unless a change is required.
+Update project-spec.yaml so helpdesk-lite becomes the active product while preserving the current architecture manifest unless a change is required.
 ```
 
 Expected result:
@@ -868,7 +967,7 @@ Goal:
 Recommended prompt:
 
 ```text
-Define the first delivery work item for bootstrapping vendor-asset-control.
+Define the first delivery work item for bootstrapping helpdesk-lite.
 If we are using GitHub Issues or another external tracker, describe the title, scope, and acceptance conditions.
 If the product repository later adopts its own in-repo delivery log, define that inside source/, not in the framework root.
 ```
@@ -878,6 +977,17 @@ Expected result:
 - a clearly scoped first delivery item,
 - traceability for the first implementation increment,
 - and no framework-root backlog artifact.
+
+A realistic first delivery item for this example could be:
+
+- title: `Bootstrap helpdesk-lite MVP skeleton`
+- scope: base ticket lifecycle, core catalogs, queue view, initial reports, and runtime bootstrap
+- acceptance conditions:
+  - product repo exists under `source/`,
+  - base runtime starts locally,
+  - ticket entities are implemented,
+  - first tests pass,
+  - first engineering deliverables exist under `source/docs/`.
 
 ### Step 7. Bootstrap the product repository under `source/`
 
@@ -910,6 +1020,24 @@ Expected result:
 - the product now has its own Git boundary,
 - the framework remains separate.
 
+After bootstrap, a plausible nested product structure for this example could look like:
+
+```text
+source/
+|-- .git/
+|-- Dockerfile
+|-- docker-compose.yml
+|-- src/
+|   |-- backend/
+|   |-- frontend/
+|   `-- shared/
+|-- tests/
+`-- docs/
+    |-- architecture/
+    |-- diagrams/
+    `-- reports/
+```
+
 ### Step 8. Ask Codex to create the initial application skeleton from the manifests
 
 Goal:
@@ -924,9 +1052,9 @@ Current-state interpretation:
 Recommended prompt:
 
 ```text
-Using project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, create the initial application skeleton inside source/.
-Create the runtime skeleton, source/Dockerfile, frontend and backend structure, and the first implementation for the main entities.
-Also create the first round of unit tests and the initial object-model documentation inside the product repository.
+Using project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, create the initial helpdesk-lite application skeleton inside source/.
+Create source/Dockerfile, the frontend and backend structure, the first implementation for Ticket, Category, Priority, SupportGroup, and TicketComment, and the first queue and ticket-detail views.
+Also create the first round of unit tests and the initial object-model documentation inside source/docs/architecture/.
 Keep the code aligned with the manifests and explain any assumptions.
 ```
 
@@ -938,6 +1066,15 @@ Expected result:
 - first unit test skeletons,
 - first object-model or class documentation inside the product repo,
 - and a clear record of any assumptions that still need to be turned into formal framework contracts.
+
+For `helpdesk-lite`, a sensible first technical slice would include:
+
+- backend models and API for categories, priorities, tickets, and comments,
+- a basic frontend ticket submission form,
+- an agent queue view,
+- a ticket detail page with comment history,
+- migrations for the core entities,
+- and basic tests for status transitions and assignment rules.
 
 ### Step 9. Develop through spec-as-source iterations
 
@@ -957,8 +1094,8 @@ Typical iteration pattern:
 Example prompt:
 
 ```text
-Add an asset maintenance schedule feature.
-First update the active product spec with entities, workflows, validations, reports, and acceptance criteria.
+Add SLA breach indicators and ticket reopening rules to helpdesk-lite.
+First update the active product spec with entities, workflows, validations, dashboard indicators, reports, and acceptance criteria.
 Then implement the required changes inside source/ and update the chosen delivery tracker or product-local notes if they exist.
 ```
 
@@ -968,7 +1105,7 @@ Expected result:
 - the chosen delivery system shows change history,
 - future agents can resume work without guessing.
 
-### A realistic two-iteration sequence
+### A realistic four-iteration sequence
 
 The example becomes much more useful if it shows how definition, implementation, testing, and deliverables evolve together.
 
@@ -983,8 +1120,8 @@ Goal:
 Recommended prompt:
 
 ```text
-Create the first implementation-grade version of products/vendor-asset-control/product-spec.yaml.
-Include business context, actors, roles, entities, use cases, workflows, UI modules, reports, imports, exports, non-functional requirements, and acceptance criteria.
+Create the first implementation-grade version of products/helpdesk-lite/product-spec.yaml.
+Include business context, actors, roles, entities, use cases, workflows, state models, UI modules, reports, dashboard indicators, non-functional requirements, and acceptance criteria.
 Then derive an E-R diagram, wireframe structure, use-case catalog, technical solution specification draft, and component compatibility matrix.
 Do not write code under source/ yet.
 ```
@@ -998,13 +1135,21 @@ Expected outputs:
 - technical solution specification v0.1,
 - compatibility matrix v0.1.
 
+Typical first-pass artifacts for this example:
+
+- E-R diagram with `Ticket`, `Category`, `Priority`, `SupportGroup`, `TicketComment`, and `TicketStatusHistory`,
+- wireframes for `Create Ticket`, `My Tickets`, `Agent Queue`, `Ticket Detail`, and `Manager Dashboard`,
+- use-case catalog grouped by requester, support agent, support manager, and admin,
+- technical solution specification covering FastAPI, React, SQLite, Docker Compose, reporting, and tests,
+- compatibility matrix proving how ticketing, dashboards, attachments, and reports map to architecture capabilities.
+
 Typical review findings from this iteration:
 
-- missing permissions,
-- ambiguous relationships,
-- missing states,
-- unclear report filters,
-- UI gaps between actors.
+- missing reopen behavior,
+- ambiguous assignment rules,
+- missing attachment constraints,
+- unclear difference between requester-visible and manager-visible fields,
+- missing KPI definitions such as `open_tickets`, `tickets_resolved_today`, and `sla_breach_count`.
 
 #### Iteration B. Second definition cycle
 
@@ -1014,13 +1159,13 @@ Goal:
 
 Example of a realistic clarification:
 
-- the review reveals that maintenance events, asset condition history, and replacement recommendations are missing from the original product scope.
+- the review reveals that the first draft is missing SLA due dates, reopen rules, escalation ownership, and manager reporting slices by support group.
 
 Recommended prompt:
 
 ```text
-Refine products/vendor-asset-control/product-spec.yaml based on the first review.
-Add maintenance-event behavior, replacement recommendations, any missing permissions, and the additional report definitions required by those changes.
+Refine products/helpdesk-lite/product-spec.yaml based on the first review.
+Add SLA due dates, reopen behavior, escalation ownership, manager dashboard metrics, and any missing permissions.
 Refresh the E-R diagram, wireframes, use cases, technical solution specification, and compatibility matrix.
 ```
 
@@ -1031,6 +1176,14 @@ Expected outputs:
 - better implementation readiness,
 - fewer hidden assumptions before code begins.
 
+What should improve after this iteration:
+
+- the E-R diagram now reflects SLA or escalation-related fields,
+- the wireframes now show manager-only metrics and queue filters,
+- the use-case model now distinguishes agent actions from manager oversight,
+- the technical solution specification now explains how SLA calculations should behave,
+- the compatibility matrix now confirms whether the current stack is enough without new capabilities.
+
 #### Iteration C. First implementation cycle
 
 Goal:
@@ -1040,7 +1193,7 @@ Goal:
 Recommended prompt:
 
 ```text
-Using the active manifests, create the initial product repository under source/ and implement the first vertical slice for vendor, location, asset, employee, and asset-assignment management.
+Using the active manifests, create the initial helpdesk-lite product repository under source/ and implement the first vertical slice for categories, priorities, tickets, comments, assignment, and queue management.
 Include backend and frontend skeletons, migrations, source/Dockerfile, and initial unit tests.
 Also write object-model documentation for the first domain entities and services inside source/docs/architecture/.
 ```
@@ -1054,10 +1207,21 @@ Expected outputs:
 - object-model documentation,
 - first runnable development container setup.
 
+For this example, the first object-model documentation should normally describe:
+
+- `Ticket`,
+- `TicketComment`,
+- `Category`,
+- `Priority`,
+- `SupportGroup`,
+- `TicketService`,
+- `AssignmentService`,
+- `QueueQueryService`.
+
 Typical verification at the end of this cycle:
 
-- run backend unit tests,
-- run frontend unit tests,
+- run backend unit tests for ticket creation, assignment rules, and valid status transitions,
+- run frontend unit tests for ticket form behavior and queue rendering,
 - review drift against manifests,
 - update the technical solution specification with implementation decisions that were already implied by the manifests.
 
@@ -1069,12 +1233,12 @@ Goal:
 
 Example of a realistic adjustment during development:
 
-- once the first slice is running, stakeholders ask for maintenance scheduling and an executive aging dashboard.
+- once the first slice is running, stakeholders ask for SLA breach indicators, ticket reopening, attachment upload, and a manager report filtered by support group.
 
 Recommended prompt:
 
 ```text
-First update the active product spec to add maintenance scheduling, dashboard indicators, validations, reports, and acceptance criteria.
+First update the active product spec to add SLA breach indicators, ticket reopening, attachment constraints, and manager reporting filters for helpdesk-lite.
 Then implement the required backend, frontend, tests, and documentation changes under source/.
 Refresh the E-R diagram, wireframes, use-case diagram, technical solution specification, compatibility matrix, and object-model documentation to keep them aligned with the new behavior.
 ```
@@ -1086,6 +1250,13 @@ Expected outputs:
 - updated unit tests,
 - refreshed design and engineering deliverables,
 - lower drift risk than a code-first change.
+
+Typical unit tests added in this cycle:
+
+- reopen only allowed from `resolved` or `closed`,
+- SLA breach indicator becomes true once due date passes,
+- attachments reject unsupported types,
+- manager report filtering respects support group boundaries.
 
 ### Step 10. Verify the product properly
 
@@ -1100,7 +1271,7 @@ Verification should include:
 - frontend tests,
 - migration review,
 - report review,
-- import/export behavior review,
+- import/export behavior review when applicable,
 - E-R diagram and use-case diagram refresh when the domain changed,
 - wireframe refresh when user interaction changed,
 - technical solution specification review,
@@ -1115,7 +1286,7 @@ Current-state note:
 Recommended prompt:
 
 ```text
-Review the implementation under source/ against the active manifests.
+Review the helpdesk-lite implementation under source/ against the active manifests.
 List drift, missing tests, missing reports, missing runtime artifacts, and any stale engineering deliverables before release.
 If the nested product repository already defines concrete test commands, run them and summarize the results.
 ```
@@ -1124,6 +1295,16 @@ Expected result:
 
 - a release candidate with evidence,
 - or a precise list of gaps to close before acceptance.
+
+For this example, the release evidence should normally include:
+
+- backend test results,
+- frontend test results,
+- current E-R diagram,
+- current wireframe pack,
+- current technical solution specification,
+- current compatibility matrix,
+- and current object-model documentation.
 
 ### Step 11. Release and continue the next cycle
 
@@ -1142,7 +1323,7 @@ Typical close-out actions:
 Recommended prompt:
 
 ```text
-Close the current delivery item, summarize what was delivered, note any remaining risks, and propose the next recommended increment for vendor-asset-control.
+Close the current delivery item, summarize what was delivered for helpdesk-lite, note any remaining risks, and propose the next recommended increment.
 ```
 
 Expected result:
