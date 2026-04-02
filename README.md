@@ -298,20 +298,31 @@ The table below describes the main deliverables that should remain viable in the
 
 | Deliverable | Primary source | Typical stage | Notes |
 |---|---|---|---|
-| E-R diagram | `products/<slug>/product-spec.yaml` entities and relationships | Before code and during structural changes | Already viable from `domains.entities`. |
+| Scope and requirements package | `purpose`, `requirements`, `actors`, `non_functional_requirements`, and `acceptance_criteria` in the product spec | Before code and whenever scope changes | The product spec itself is the primary requirements deliverable. |
+| Requirements traceability matrix | product spec requirements, architecture capabilities, implementation slices, and tests | Definition through verification | Important for proving that requirements map to artifacts and evidence. |
+| Logical data model and E-R diagram | `products/<slug>/product-spec.yaml` entities and relationships | Before code and during structural changes | Already viable from `domains.entities`; logical and visual views should stay aligned. |
+| Data dictionary | product entities, field validations, business constraints, and implemented schema | Before code and during schema changes | Complements the E-R view with field-level semantics and validation rules. |
 | Use-case catalog and use-case diagram | `actors`, `roles`, `use_cases`, `workflows` in the product spec | Before code and whenever scope changes | Already viable from the current product spec structure. |
-| Wireframe pack | `ui.modules`, reports, roles, workflows | Before code and after UX-affecting changes | Viable as structural wireframes today; high-fidelity design still depends on deeper UX conventions. |
-| Technical solution specification | `project-spec.yaml` + `scaffold/architecture-manifest.yaml` + active `product-spec.yaml` | Before bootstrap and refreshed per major increment | Viable as a formal design document that explains architecture, runtime, modules, flows, and constraints. |
-| Component compatibility matrix | architecture technology profile, variation points, and product required capabilities | Before implementation and before release | Viable as a cross-check between stack choices, versions, and requested capabilities. |
+| Wireframe pack and navigation model | `ui.modules`, reports, roles, workflows | Before code and after UX-affecting changes | Viable as structural wireframes today; high-fidelity design still depends on deeper UX conventions. |
+| Technical solution specification | `project-spec.yaml` + `scaffold/architecture-manifest.yaml` + active `product-spec.yaml` | Before bootstrap and refreshed per major increment | Explains runtime topology, modules, data strategy, testing approach, and constraints. |
+| Application architecture diagram and component decomposition | architecture manifest, capability mapping, and active product scope | Before implementation and when structure changes | Useful for showing service boundaries, modules, and major implementation pieces. |
+| Component compatibility matrix | architecture technology profile, variation points, and product required capabilities | Before implementation and before release | Cross-checks stack choices, versions, and requested capabilities. |
+| API specification | architecture API style plus product entities, workflows, validations, and implemented endpoints | Before implementation and refreshed during delivery | Critical for serious products even when the UI and backend are developed together. |
+| Security and access matrix | roles, permissions, security NFRs, and architecture access conventions | Before implementation and verification | Especially important for internal apps with scoped visibility and edit rights. |
 | Object model or OOP/class documentation | product entities plus implementation under `source/` | After the first implementation skeleton and refreshed during development | Partly spec-derived before code, strongest once classes and services exist in the product repo. |
-| Unit test suites | architecture test strategy, product acceptance criteria, workflows, and implemented code | During development and verification | Viable because the framework already declares `pytest` and `vitest` as the intended test tools. |
+| Test strategy, automated test suites, and execution evidence | architecture test strategy, product acceptance criteria, workflows, and implemented code | During development and verification | Unit tests are only one part; serious delivery also benefits from integration, end-to-end, and evidence artifacts. |
 | Reports and import/export templates | product report/import/export sections plus architecture reporting stack | During implementation and verification | Already viable as formal outputs even before full generator automation exists. |
+| Deployment guide, operations runbook, and release notes | architecture delivery profile, runtime configuration, and product release state | Before release and refreshed per operational change | Needed when the product moves from implementation to handover and support. |
 
 This is the practical rule:
 
 - design artifacts can be derived as soon as the product spec is rich enough,
 - implementation artifacts are created under `source/` after bootstrap,
 - and verification artifacts become stronger once tests and runtime exist inside the product repository.
+
+Not every lightweight example needs every deliverable to be polished in the first iteration.
+
+Even so, ArchSpec should make each of these deliverables expressible, traceable, and refreshable from the manifests plus the product repository under `source/`.
 
 ## Lifecycle with ArchSpec
 
@@ -916,6 +927,11 @@ From the active product spec, derive a use-case diagram narrative for helpdesk-l
 ```
 
 ```text
+From the active product spec, derive a data dictionary for helpdesk-lite.
+Explain each core field, its meaning, and its validation intent.
+```
+
+```text
 From project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, draft the technical solution specification for helpdesk-lite.
 Explain runtime topology, modules, data strategy, testing strategy, reporting strategy, and key implementation constraints.
 ```
@@ -925,11 +941,17 @@ From the active architecture manifest and product spec, create a component compa
 Show how requested capabilities map to stack components, runtimes, and expected deliverables.
 ```
 
+```text
+From the active architecture manifest and product spec, draft the initial API specification and the security-access matrix for helpdesk-lite.
+```
+
 Expected result:
 
 - design review artifacts derived from the spec,
+- a data dictionary grounded in the product model,
 - a technical solution specification grounded in the manifests,
 - a component compatibility matrix that exposes architectural gaps early,
+- an initial API specification and permissions view,
 - earlier discovery of missing entities, flows, permissions, or dashboard expectations,
 - lower risk of rewriting the product later.
 
@@ -938,7 +960,9 @@ The most useful artifacts for this example at this stage are:
 - an E-R diagram that proves ticket relationships are clean,
 - wireframes that prove the workflow is usable for each actor,
 - a use-case catalog that proves permissions and responsibilities are coherent,
+- a data dictionary that proves fields and validations are not ambiguous,
 - a technical solution specification that explains how the app will be shaped inside `source/`,
+- an API specification and security-access matrix that expose contract gaps before implementation,
 - and a compatibility matrix that proves the current architecture really supports the requested features.
 
 ### Step 5. Activate the new product in workspace composition
@@ -1054,7 +1078,7 @@ Recommended prompt:
 ```text
 Using project-spec.yaml, scaffold/architecture-manifest.yaml, and the active product spec, create the initial helpdesk-lite application skeleton inside source/.
 Create source/Dockerfile, the frontend and backend structure, the first implementation for Ticket, Category, Priority, SupportGroup, and TicketComment, and the first queue and ticket-detail views.
-Also create the first round of unit tests and the initial object-model documentation inside source/docs/architecture/.
+Also create the first round of unit tests, the initial API specification, and the initial object-model documentation inside source/docs/.
 Keep the code aligned with the manifests and explain any assumptions.
 ```
 
@@ -1064,6 +1088,7 @@ Expected result:
 - application structure such as `source/src/`,
 - first domain-aligned implementation based on the manifests,
 - first unit test skeletons,
+- first API contract draft,
 - first object-model or class documentation inside the product repo,
 - and a clear record of any assumptions that still need to be turned into formal framework contracts.
 
@@ -1140,7 +1165,9 @@ Typical first-pass artifacts for this example:
 - E-R diagram with `Ticket`, `Category`, `Priority`, `SupportGroup`, `TicketComment`, and `TicketStatusHistory`,
 - wireframes for `Create Ticket`, `My Tickets`, `Agent Queue`, `Ticket Detail`, and `Manager Dashboard`,
 - use-case catalog grouped by requester, support agent, support manager, and admin,
+- data dictionary for core ticketing fields and validations,
 - technical solution specification covering FastAPI, React, SQLite, Docker Compose, reporting, and tests,
+- initial API specification and security-access matrix,
 - compatibility matrix proving how ticketing, dashboards, attachments, and reports map to architecture capabilities.
 
 Typical review findings from this iteration:
@@ -1181,7 +1208,9 @@ What should improve after this iteration:
 - the E-R diagram now reflects SLA or escalation-related fields,
 - the wireframes now show manager-only metrics and queue filters,
 - the use-case model now distinguishes agent actions from manager oversight,
+- the data dictionary now explains SLA and escalation fields precisely,
 - the technical solution specification now explains how SLA calculations should behave,
+- the API specification and security-access matrix now reflect the refined contract,
 - the compatibility matrix now confirms whether the current stack is enough without new capabilities.
 
 #### Iteration C. First implementation cycle
@@ -1269,14 +1298,18 @@ Verification should include:
 - manifest-to-code drift review,
 - backend tests,
 - frontend tests,
+- API specification review,
 - migration review,
+- data dictionary review,
 - report review,
 - import/export behavior review when applicable,
 - E-R diagram and use-case diagram refresh when the domain changed,
 - wireframe refresh when user interaction changed,
 - technical solution specification review,
 - component compatibility matrix review,
+- security and access matrix review,
 - object-model documentation review,
+- deployment guide, runbook, and release notes review when release preparation has started,
 - runtime validation with Docker or the chosen delivery profile.
 
 Current-state note:
@@ -1300,11 +1333,15 @@ For this example, the release evidence should normally include:
 
 - backend test results,
 - frontend test results,
+- API specification,
+- security and access matrix,
 - current E-R diagram,
+- current data dictionary,
 - current wireframe pack,
 - current technical solution specification,
 - current compatibility matrix,
-- and current object-model documentation.
+- current object-model documentation,
+- and release or operational documents if the increment is being handed over.
 
 ### Step 11. Release and continue the next cycle
 

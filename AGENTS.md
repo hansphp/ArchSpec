@@ -103,9 +103,12 @@ Change Protocol
   - API and services,
   - UI and forms,
   - reports and templates,
+  - traceability matrices and API specifications,
+  - data dictionaries and architecture diagrams,
   - diagrams and wireframes,
-  - technical specifications and compatibility matrices,
+  - technical specifications, security-access matrices, and compatibility matrices,
   - object-model documentation and test suites,
+  - deployment guides, runbooks, and release notes when relevant,
   - docker and runtime files inside `source/`.
 - Record durable structural decisions in `adrs/` when the framework contract changes materially.
 
