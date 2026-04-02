@@ -1,6 +1,6 @@
 # REFERENCES
 
-This document synthesizes the contents of `references/` into an AI-facing methodological base for working with ArchSpec.
+This document synthesizes the contents of `deep-research-reports/` into an AI-facing methodological base for working with ArchSpec.
 
 Its purpose is not to replace the source of truth of the repository.
 
@@ -33,7 +33,7 @@ When working in this repository, the AI should treat sources in this order:
 4. `AGENTS.md`,
 5. this `REFERENCES.md`,
 6. implementation code,
-7. raw files inside `references/`.
+7. raw files inside `deep-research-reports/`.
 
 This means:
 
@@ -56,19 +56,27 @@ That is the conceptual base ArchSpec should preserve.
 
 ## Reference source map
 
+The files under `deep-research-reports/` are intended to function as a manually refreshable state-of-the-art knowledge base.
+
+That means:
+
+- they should preserve stable concepts,
+- they should be updated manually when the field changes meaningfully,
+- and they should prefer clear factual framing over one-off exploratory report naming.
+
 The synthesized ideas in this file are primarily derived from:
 
-- `references/metodology.md`
-- `references/deep-research-report.md`
-- `references/deep-research-report (1).md`
-- `references/deep-research-report (2).md`
+- `deep-research-reports/methodology.md`
+- `deep-research-reports/pre-code-framework-landscape.md`
+- `deep-research-reports/spec-driven-development-foundations.md`
+- `deep-research-reports/owasp-asvs-reference.md`
 
 Each file contributes a different angle:
 
-- `metodology.md` provides software engineering, lifecycle, governance, quality, security, metrics, and architecture foundations.
-- `deep-research-report.md` explains the strategic positioning of ArchSpec-like work as a framework above code generation.
-- `deep-research-report (1).md` provides the strongest conceptual base for Spec-Driven Development as an engineering discipline.
-- `deep-research-report (2).md` provides a practical training-style decomposition of an SDD toolchain and working model.
+- `methodology.md` provides software engineering, lifecycle, governance, quality, security, metrics, and architecture foundations.
+- `pre-code-framework-landscape.md` explains the strategic positioning of ArchSpec-like work as a framework above direct code generation.
+- `spec-driven-development-foundations.md` provides the strongest conceptual base for Spec-Driven Development as an engineering discipline.
+- `owasp-asvs-reference.md` provides a structured factual reference for application-security verification requirements centered on OWASP ASVS.
 
 ## Core methodological facts the AI should assume
 
@@ -384,6 +392,27 @@ The AI should default to:
 
 The AI should also recognize that tests can act as executable specifications when written at the right level.
 
+## OWASP ASVS facts the AI should know
+
+The security research set includes a concrete factual reference for OWASP ASVS, not only a generic "security matters" reminder.
+
+The most important facts preserved from `deep-research-reports/owasp-asvs-reference.md` are:
+
+- OWASP ASVS is an open standard of verifiable security requirements for web applications and web services.
+- Its role is to define what should be verified, not to prescribe one implementation stack or one SDLC model.
+- The current version captured in the research base is `ASVS 5.0.0`, released in `May 2025`.
+- ASVS 5.0 organizes `345` requirements across `3` levels and `17` chapters.
+- The level counts captured from the research base are `L1 = 70`, `L2 = 183`, and `L3 = 92`.
+- `L1` is a low-friction baseline, `L2` is the recommended target for most serious applications, and `L3` is a higher-assurance profile with deeper verification burden.
+- ASVS is best treated as a product-security verification standard for backend systems, web services, and APIs.
+- ASVS does not by itself define a full secure SDLC, CI/CD model, or hosting/operations program.
+- OWASP does not certify products, vendors, or verifiers under ASVS, so third-party "ASVS certification" claims are not official OWASP certification.
+- ASVS should be paired with adjacent implementation and testing guidance such as the OWASP Cheat Sheet Series and the OWASP Web Security Testing Guide.
+- For mobile systems, the better OWASP references are `MASVS` and `MASTG`, not ASVS alone.
+- ASVS applicability is selective by chapter, so teams should map only the chapters relevant to the active product and architecture.
+
+For ArchSpec, the practical implication is that security should be modeled as verifiable requirements and applicability decisions, not as vague "follow best practices" statements.
+
 ## Security posture the AI should assume
 
 The references consistently treat security as a lifecycle concern, not a post-build activity.
@@ -621,9 +650,9 @@ When the AI needs to make a decision under uncertainty, these heuristics should 
 - prefer simple architecture with clean boundaries before distributed complexity,
 - prefer enforcement mechanisms whenever a spec is expected to stay authoritative.
 
-## Relationship to raw `references/`
+## Relationship to raw `deep-research-reports/`
 
-`references/` should still be treated as the long-form research archive.
+`deep-research-reports/` should still be treated as the long-form research archive.
 
 This file is the operational synthesis.
 

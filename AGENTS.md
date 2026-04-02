@@ -7,7 +7,7 @@ Purpose
   - `project-spec.yaml` as the workspace composition manifest.
   - `scaffold/architecture-manifest.yaml` as the reusable technical foundation.
   - `products/<slug>/product-spec.yaml` as the business and UX definition of a concrete product.
-- `REFERENCES.md` is the curated methodological knowledge base synthesized from `references/` for stable engineering concepts, lifecycle guidance, and reusable heuristics.
+- `REFERENCES.md` is the curated methodological knowledge base synthesized from `deep-research-reports/` for stable engineering concepts, lifecycle guidance, and reusable heuristics.
 - Source code and formal product deliverables are derived artifacts that emerge from the active composition plus the referenced manifests.
 
 Authority Order
@@ -77,9 +77,9 @@ Working Mode
   - verify that generated artifacts match the manifests.
 
 Reference Use
-- Treat `REFERENCES.md` as the preferred entry point to the research archive in `references/`.
-- Use raw files inside `references/` only when deeper context is needed.
-- Never treat `REFERENCES.md` or `references/` as the business source of truth for the active product.
+- Treat `REFERENCES.md` as the preferred entry point to the research archive in `deep-research-reports/`.
+- Use raw files inside `deep-research-reports/` only when deeper context is needed.
+- Never treat `REFERENCES.md` or `deep-research-reports/` as the business source of truth for the active product.
 
 Tracking Boundary
 - The framework repository does not keep an internal backlog or iteration log for framework evolution.
